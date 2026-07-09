@@ -277,6 +277,8 @@ Key requirements:
 - Copy button uses `navigator.clipboard` with a fallback (`document.execCommand('copy')` on a temporary textarea) and visibly reports failure — never fails silently.
 - **Editable prompts**: `pre.prompt` carries `data-prompt-id` and is made `contenteditable="plaintext-only"` (fallback `true`). On input, the current text saves to `sd-{slug}-p-{promptId}-edit`; an "edited" badge and a Reset button appear. Reset restores the original (captured into a JS Map at load, before applying saved edits) and clears the key. Copy copies the current DOM text — edits included. The howto warns: manual edits live only in this browser; when asking Claude for revisions, mention them or paste the edited prompt.
 - **Language mirror**: if the user's language is not English, every prompt gets a second `<pre class="prompt-mirror" hidden>` with a faithful translation written at generation time — never machine-translated at runtime, the file stays offline. Dialogue lines stay in English with a «…» translation in parentheses. A per-prompt EN/RU toggle button swaps which `<pre>` is visible; the mirror is read-only and Copy ignores it. After manual edits the mirror can lag behind the English text — that's acceptable; the edited badge signals it.
+- **Button layout**: all per-prompt controls (edited badge, Reset, RU/EN, Copy) sit together in one `.prompt-actions` group pushed to the right edge of the label row (`margin-left: auto`) — never scattered across the row.
+- **Keyboard shortcuts**: native editing shortcuts (Ctrl+Z/Ctrl+Y undo-redo, Ctrl+C/X/V, Ctrl+A) work inside prompts via contenteditable; add board-level bindings — Ctrl/Cmd+Shift+C copies the prompt under the cursor or being edited, Ctrl/Cmd+Shift+L toggles the language mirror, Esc blurs editing. List the shortcuts in the howto.
 - Collapsible blocks at the top: Asset Checklist, Style Prefix (core), Repair Guide.
 - Runtime summary line under the title: target final length · prompt count · total generation seconds.
 - Risk badge and final-cut target shown in each prompt's label row.
@@ -326,9 +328,10 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
   .scene.done .scene-desc { text-decoration: line-through; color: var(--text-dim); }
   .prompt-block { background: var(--panel-2); border: 1px solid var(--border);
     border-radius: 6px; margin-top: 12px; overflow: hidden; }
-  .prompt-label { display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  .prompt-label { display: flex; justify-content: flex-start; align-items: center; gap: 10px;
     padding: 8px 14px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border);
     font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; flex-wrap: wrap; }
+  .prompt-actions { display: flex; gap: 8px; margin-left: auto; align-items: center; }
   .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); }
   .copy-btn { background: transparent; color: var(--accent); border: 1px solid var(--border);
     border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
@@ -364,6 +367,7 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
     Build every asset in the checklist FIRST, generate 🔴 high-risk prompts first.
     Copy grabs the full standalone prompt. Track status / keeper timecode / notes per prompt — everything saves automatically.
     Prompts are click-to-edit; local edits live only in this browser — mention them (or paste the edited prompt) when asking Claude for revisions. RU/EN toggles the translation; Copy always copies English.
+    Shortcuts: <b>Ctrl+Z / Ctrl+Y</b> — undo/redo while editing · <b>Ctrl+Shift+C</b> — copy the prompt under the cursor · <b>Ctrl+Shift+L</b> — RU/EN · <b>Esc</b> — finish editing.
     A generation failed? Open the Repair Guide. Want changes? Give this file back to Claude.
   </div>
 
@@ -457,6 +461,31 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
       btn.textContent = showRu ? 'EN' : 'RU';
     });
   });
+
+  // Keyboard shortcuts.
+  // Inside a prompt, native editing shortcuts work as usual: Ctrl+Z / Ctrl+Y (undo/redo), Ctrl+C/X/V, Ctrl+A.
+  // Board shortcuts target the prompt under the cursor or the one being edited:
+  //   Ctrl/Cmd+Shift+C — copy the full prompt · Ctrl/Cmd+Shift+L — toggle RU/EN · Esc — finish editing
+  const activeBlock = () => {
+    const el = document.activeElement;
+    const focused = el && el.closest ? el.closest('.prompt-block') : null;
+    return focused || document.querySelector('.prompt-block:hover');
+  };
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const el = document.activeElement;
+      if (el && el.classList && el.classList.contains('prompt')) el.blur();
+      return;
+    }
+    if (!(e.ctrlKey || e.metaKey) || !e.shiftKey) return;
+    const k = e.key.toLowerCase();
+    if (k !== 'c' && k !== 'l') return;
+    const block = activeBlock();
+    if (!block) return;
+    e.preventDefault();
+    if (k === 'c') { const b = block.querySelector('.copy-btn'); if (b) b.click(); }
+    if (k === 'l') { const b = block.querySelector('.lang-btn'); if (b) b.click(); }
+  });
 </script>
 </body>
 </html>
@@ -476,10 +505,12 @@ Each scene block in `{{SCENES_HTML}}` follows this pattern:
     <div class="prompt-label">
       <span>Prompt 3a · 15s → ~4s final</span>
       <span class="badge">🟡 tricky — two-person blocking</span>
-      <span class="edited-badge" data-prompt-id="3a" hidden>edited</span>
-      <button class="tool-btn lang-btn">RU</button>
-      <button class="tool-btn reset-btn" data-prompt-id="3a" hidden>Reset</button>
-      <button class="copy-btn">Copy</button>
+      <span class="prompt-actions">
+        <span class="edited-badge" data-prompt-id="3a" hidden>edited</span>
+        <button class="tool-btn reset-btn" data-prompt-id="3a" hidden>Reset</button>
+        <button class="tool-btn lang-btn">RU</button>
+        <button class="copy-btn">Copy</button>
+      </span>
     </div>
     <pre class="prompt" data-prompt-id="3a">[FULL PROMPT — Style CORE, Lighting, Characters (@refs), Scene, CUTs, ENDS ON, SFX]</pre>
     <pre class="prompt-mirror" hidden>[Полное зеркало промпта на языке пользователя — только для чтения; реплики остаются на английском с переводом в «…»]</pre>

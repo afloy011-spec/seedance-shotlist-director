@@ -38,9 +38,10 @@
   .scene.done .scene-desc { text-decoration: line-through; color: var(--text-dim); }
   .prompt-block { background: var(--panel-2); border: 1px solid var(--border);
     border-radius: 6px; margin-top: 12px; overflow: hidden; }
-  .prompt-label { display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  .prompt-label { display: flex; justify-content: flex-start; align-items: center; gap: 10px;
     padding: 8px 14px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border);
     font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; flex-wrap: wrap; }
+  .prompt-actions { display: flex; gap: 8px; margin-left: auto; align-items: center; }
   .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); }
   .copy-btn { background: transparent; color: var(--accent); border: 1px solid var(--border);
     border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
@@ -76,6 +77,7 @@
     Сначала собери все ассеты из чеклиста, генерируй 🔴-промпты первыми.
     Copy забирает полный автономный промпт. Отмечай статус / таймкод кипера / заметки — всё сохраняется само.
     Текст промпта редактируется кликом — правки живут только в этом браузере (упомяни их, когда попросишь Claude о ревизии). Кнопка RU показывает перевод; Copy всегда копирует английский.
+    Шоткаты: <b>Ctrl+Z / Ctrl+Y</b> — отмена/повтор при редактировании · <b>Ctrl+Shift+C</b> — скопировать промпт под курсором · <b>Ctrl+Shift+L</b> — RU/EN · <b>Esc</b> — выйти из редактирования.
     Генерация не удалась? Открой Repair Guide. Нужны правки? Просто отдай этот файл Claude.
   </div>
 
@@ -130,10 +132,12 @@ Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
       <div class="prompt-label">
         <span>Prompt 1a · 15s → ~8s final</span>
         <span class="badge">🔴 high-risk — толпа у барьеров + взаимодействие с продуктом</span>
-        <span class="edited-badge" data-prompt-id="1a" hidden>edited</span>
-        <button class="tool-btn lang-btn">RU</button>
-        <button class="tool-btn reset-btn" data-prompt-id="1a" hidden>Reset</button>
-        <button class="copy-btn">Copy</button>
+        <span class="prompt-actions">
+          <span class="edited-badge" data-prompt-id="1a" hidden>edited</span>
+          <button class="tool-btn reset-btn" data-prompt-id="1a" hidden>Reset</button>
+          <button class="tool-btn lang-btn">RU</button>
+          <button class="copy-btn">Copy</button>
+        </span>
       </div>
       <pre class="prompt" data-prompt-id="1a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
@@ -219,10 +223,12 @@ SFX: рваное дыхание и замедляющиеся шаги → ап
       <div class="prompt-label">
         <span>Prompt 2a · 15s → ~6s final</span>
         <span class="badge">🟡 tricky — два диалоговых бита + двухперсонажный блокинг</span>
-        <span class="edited-badge" data-prompt-id="2a" hidden>edited</span>
-        <button class="tool-btn lang-btn">RU</button>
-        <button class="tool-btn reset-btn" data-prompt-id="2a" hidden>Reset</button>
-        <button class="copy-btn">Copy</button>
+        <span class="prompt-actions">
+          <span class="edited-badge" data-prompt-id="2a" hidden>edited</span>
+          <button class="tool-btn reset-btn" data-prompt-id="2a" hidden>Reset</button>
+          <button class="tool-btn lang-btn">RU</button>
+          <button class="copy-btn">Copy</button>
+        </span>
       </div>
       <pre class="prompt" data-prompt-id="2a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
@@ -310,10 +316,12 @@ SFX: бульканье кулера затихает → предрассвет
       <div class="prompt-label">
         <span>Prompt 3a · 15s → ~6s final</span>
         <span class="badge">🔴 high-risk — толпа + контакт двух персонажей в кадре</span>
-        <span class="edited-badge" data-prompt-id="3a" hidden>edited</span>
-        <button class="tool-btn lang-btn">RU</button>
-        <button class="tool-btn reset-btn" data-prompt-id="3a" hidden>Reset</button>
-        <button class="copy-btn">Copy</button>
+        <span class="prompt-actions">
+          <span class="edited-badge" data-prompt-id="3a" hidden>edited</span>
+          <button class="tool-btn reset-btn" data-prompt-id="3a" hidden>Reset</button>
+          <button class="tool-btn lang-btn">RU</button>
+          <button class="copy-btn">Copy</button>
+        </span>
       </div>
       <pre class="prompt" data-prompt-id="3a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
@@ -391,10 +399,12 @@ SFX: рёв толпы с первого кадра, стук по щитам б
       <div class="prompt-label">
         <span>Prompt 3b · 15s → ~5s final</span>
         <span class="badge">🟢 safe — продукт, статика, без людей</span>
-        <span class="edited-badge" data-prompt-id="3b" hidden>edited</span>
-        <button class="tool-btn lang-btn">RU</button>
-        <button class="tool-btn reset-btn" data-prompt-id="3b" hidden>Reset</button>
-        <button class="copy-btn">Copy</button>
+        <span class="prompt-actions">
+          <span class="edited-badge" data-prompt-id="3b" hidden>edited</span>
+          <button class="tool-btn reset-btn" data-prompt-id="3b" hidden>Reset</button>
+          <button class="tool-btn lang-btn">RU</button>
+          <button class="copy-btn">Copy</button>
+        </span>
       </div>
       <pre class="prompt" data-prompt-id="3b">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
@@ -561,6 +571,31 @@ SFX: почти тишина — тонкий воздушный тон, едв�
       ru.hidden = !showRu; en.hidden = showRu;
       btn.textContent = showRu ? 'EN' : 'RU';
     });
+  });
+
+  // Keyboard shortcuts.
+  // Inside a prompt, native editing shortcuts work as usual: Ctrl+Z / Ctrl+Y (undo/redo), Ctrl+C/X/V, Ctrl+A.
+  // Board shortcuts target the prompt under the cursor or the one being edited:
+  //   Ctrl/Cmd+Shift+C — copy the full prompt · Ctrl/Cmd+Shift+L — toggle RU/EN · Esc — finish editing
+  const activeBlock = () => {
+    const el = document.activeElement;
+    const focused = el && el.closest ? el.closest('.prompt-block') : null;
+    return focused || document.querySelector('.prompt-block:hover');
+  };
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const el = document.activeElement;
+      if (el && el.classList && el.classList.contains('prompt')) el.blur();
+      return;
+    }
+    if (!(e.ctrlKey || e.metaKey) || !e.shiftKey) return;
+    const k = e.key.toLowerCase();
+    if (k !== 'c' && k !== 'l') return;
+    const block = activeBlock();
+    if (!block) return;
+    e.preventDefault();
+    if (k === 'c') { const b = block.querySelector('.copy-btn'); if (b) b.click(); }
+    if (k === 'l') { const b = block.querySelector('.lang-btn'); if (b) b.click(); }
   });
 </script>
 </body>
