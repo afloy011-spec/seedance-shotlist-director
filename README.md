@@ -1,34 +1,40 @@
 # seedance-shotlist-director
 
-Claude Code skill: turns a script / scene / treatment into a director's shotlist — a single self-contained HTML production board with copy-ready **Seedance 2.0** prompts.
+**Сценарий любой длины → готовый продакшн-борд для Seedance 2.0. Один промпт — весь препродакшн.**
 
-Based on the skill shipped by [Higgsfield AI](https://higgsfield.ai) in the tutorial ["3-Step Workflow To Make Ultra-Realistic AI Ads"](https://www.youtube.com/watch?v=3rDs6FhFoUQ), heavily extended.
+Claude-скилл: кидаешь сценарий (хоть 28 слов), получаешь единый HTML-файл, в котором уже есть всё, что обычно собирается руками за вечер:
 
-## History
+- **Промпты уровня режиссёра, не транскрибера** — блокинг по футам, мотивированная камера («static 50mm, locked off — lets the silence sit»), актёрка микро-битами («jaw tightens, she swallows once before answering»), свет, спроектированный под каждую сцену отдельно
+- **Клипы, которые склеиваются** — каждый промпт заканчивается `ENDS ON:` (точный последний кадр), следующий открывается с него же; между сценами — спроектированные match-cut'ы
+- **Консистентность через @ассеты** — `@hero`, `@hero_wet`, `@bottle` в каждом промпте, имена 1:1 совпадают с Elements в Higgsfield; чеклист «что собрать до генерации» рендерится первым блоком
+- **Экономика кредитов** — каждый шот размечен риском 🟢🟡🔴 (толпа/хореография/текст в кадре = дорого) с правилом «красные генерь первыми», плюс бюджет сверху: «~25s ролик · 4 промпта · 60s генерации»
+- **Продакшн-трекинг в самом файле** — статус на промпт (⬜🔄⚠️✅), таймкод кипера, заметки; всё живёт в localStorage с неймспейсом проекта, переживает перегенерацию файла
+- **Repair Guide** — таблица «симптом → правка» (лицо поплыло / пропс левитирует / хореография в кашу) прямо в борде, чтобы не гадать, что менять после фейла
+- **Project Bible** — машиночитаемый JSON внутри HTML: персонажи, ассеты, свет, хэндоффы. Через неделю кидаешь файл в новый чат Claude — контекст восстановлен полностью, ревизия без пересказа
 
-- **Commit 1** — the original Higgsfield `SKILL.md`, verbatim (only the claude.ai output paths adapted for local Claude Code).
-- **Commit 2** — the improved version, driven by a user-pain review of the real production loop.
+Файл самодостаточный: один HTML, ноль зависимостей, работает офлайн. Кнопка Copy отдаёт промпт целиком (Style Prefix + Characters + Scene + CUTs + ENDS ON + SFX) — вставил в Seedance и погнали.
 
-## What the improved version adds
+## Попробовать за 30 секунд
 
-| Area | Improvement |
-|---|---|
-| Consistency | `@asset` reference convention (`@hero`, `@s_hero_wet`) restored from the original Higgsfield workflow + **Asset Checklist** rendered before any generation |
-| Editing | **ENDS ON handoff frames** — every prompt declares its exact final frame so clips cut together; match-cut design between scenes |
-| Credits | **Risk badges** (🟢🟡🔴) with attempt estimates, "generate high-risk first" strategy, **final-cut targets** (15s gen → ~3s final) and a runtime/budget summary |
-| Iteration | **Repair Guide** in the HTML: symptom → fix table for failed generations, "change one thing per retry" rule |
-| Tracking | Binary checkbox → per-prompt **status** (⬜/🔄/⚠️/✅), **keeper timecode** and **notes** fields, all persisted |
-| Sessions | **Project Bible** — embedded JSON (characters, assets, style, scene map) so a fresh Claude session restores full context from the file alone |
-| Bugs | localStorage keys namespaced by project slug (no state bleed between shotlists); clipboard fallback (no silent copy failures); HTML-entity escaping in prompts |
-| Style | Style prefix split into fixed CORE + **per-scene lighting** (the original hard-coded contre-jour globally); dialogue rules fixed (diegetic dialogue explicitly allowed and directed) |
-| UX | Scene descriptions in the user's language (prompts stay English, as Seedance requires) |
+Открой [examples/shotlist_improved.html](examples/shotlist_improved.html) в браузере — это борд, собранный скиллом по сценарию из трёх предложений. Рядом [examples/shotlist_original.html](examples/shotlist_original.html) — тот же сценарий через исходный скилл Higgsfield: разница видна без объяснений.
 
-## Install (Claude Code)
-
-Put `SKILL.md` into a folder named `seedance-shotlist-director` under your skills directory:
+## Установка (Claude Code)
 
 ```
 ~/.claude/skills/seedance-shotlist-director/SKILL.md
 ```
 
-Then ask Claude: *"сделай шотлист"* / *"make a shotlist"* with your script.
+Дальше просто: *«сделай шотлист»* + сценарий. Ревизии — отдай файл обратно и скажи, что поменять: нумерация сцен и твой прогресс сохранятся.
+
+## Что ещё умеет
+
+- **9:16 / 1:1 версии** — все промпты изначально center-safe (ключевое действие в центральных 40% кадра), по запросу борд перекомпоновывается под вертикаль, не просто меняет цифру
+- **Монтаж под музыку** — дай BPM: каты нарезаются по тактам (240/BPM сек), физические действия расписываются по нумерованным битам
+- **Диалоги** — реплики с режиссурой подачи, diegetic audio
+- **Другие видеомодели** (Veo/Kling/Runway…) — скилл не подсовывает Seedance-формат молча: режиссёрский метод сохраняется, контейнер адаптируется
+
+## Происхождение и качество
+
+- Коммит 1 — оригинальный скилл из [туториала Higgsfield AI](https://www.youtube.com/watch?v=3rDs6FhFoUQ), дословно
+- Дальше — расширение, построенное на разборе реальных болей продакшн-цикла (итерации, склейка, возврат в проект через день)
+- [tests/golden-scenarios.md](tests/golden-scenarios.md) — 3 стресс-сценария (8-сценная машина состояний персонажа, диалоговая драма со сменой ритма) + 10 блокирующих критериев: любая правка скилла прогоняется на регрессию
