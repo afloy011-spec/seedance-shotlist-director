@@ -45,7 +45,7 @@ Seedance consistency lives and dies on locked reference assets. Before writing a
    - Character state variant: separate wet/dirty/bloodied version, built once, reused
    - Location: ¾ angle reference with depth (so the camera can move)
    - Product/prop: multi-angle sheet (GPT Image or similar)
-   - For complex staging: a **layout map** — an overhead schematic pinning where things stand relative to each other; reference it in the Scene block instead of describing geometry in prose. **Don't just tell the user to make one — draw it**: embed a small inline SVG right in that scene's block in the HTML (see "Layout maps" below). The user screenshots it and uploads it to Higgsfield as a reference Element (e.g. `@map_finish`).
+   - For complex staging: a **layout map** — a simple overhead schematic pinning where things stand relative to each other; reference it in the Scene block instead of describing geometry in prose
 
 If the user has already uploaded asset images or given @names in the conversation, use their names verbatim. If not, invent clear names and tell the user to create matching Elements.
 
@@ -139,16 +139,6 @@ Mark every prompt:
 - 🔴 **high-risk** — crowds, complex choreography, text in frame, water/particles, fast camera + fast subject. 5–10+ attempts.
 
 State WHY in one clause. Advise the user to generate 🔴 prompts first — if a high-risk shot won't land, cheaper to redesign the scene before the safe shots are already paid for.
-
-### Layout maps (draw them, don't describe them)
-
-Whenever a scene has 3+ positioned things (characters, props, entrances) or any prompt in it hit the "wrong spatial layout" failure, generate an **inline SVG overhead schematic** inside that scene's block in the HTML:
-
-- Simple shapes only: rectangles for structures (barriers, counters, walls), circles for people, a diamond for the hero prop, arrows for movement direction, a camera glyph (▶ rotated) for each CUT's camera position.
-- Label everything with the same @names used in the prompts (`@mark`, `@bottle`, gap, finish line).
-- Dark background matching the board (`#1d1d21`), thin light strokes, ~700×300, `max-width:100%`.
-- Under the SVG, one caption line: "Upload a screenshot of this map to Higgsfield as `@map_<scene>` and it is referenced in the Scene block."
-- In the prompt's Scene text, reference it: "Per the layout map (@map_finish): …" — spatial relations then live in the image, not in fragile prose.
 
 ### Aspect ratios and deliverables
 
@@ -288,7 +278,6 @@ Key requirements:
 - Risk badge and final-cut target shown in each prompt's label row.
 - Scene description lines in the **user's language**; all prompt text in English.
 - **Project Bible**: at the end of `<body>`, embed `<script type="application/json" id="project-bible">` containing: project title + slug, style prefix (core + per-scene lighting), characters (with @names, descriptions, state variants), assets checklist, a scene map (scene numbers, descriptions, prompt ids, risk, final-cut targets, ENDS ON handoffs), and — when relevant — `bpm` with the per-prompt bar plan and the aspect-ratio variants shipped. Valid JSON, escape `</script>` sequences.
-- **Layout map SVGs**: scenes with complex staging get an inline SVG schematic between the scene header and the first prompt block (see "Layout maps").
 
 HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{ASSET_CHECKLIST_HTML}}`, `{{STYLE_PREFIX_TEXT}}`, `{{REPAIR_GUIDE_HTML}}`, `{{SCENES_HTML}}`, `{{PROJECT_BIBLE_JSON}}`):
 
