@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AquaPulse — Director's Shotlist</title>
 <style>
   :root {
@@ -53,13 +54,19 @@
     border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
     text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit; }
   .tool-btn:hover { border-color: var(--text-dim); color: var(--text); }
+  .tool-btn.active { color: var(--accent); border-color: var(--accent); }
   .edited-badge { font-size: 10px; color: var(--warn); border: 1px solid var(--warn);
     border-radius: 10px; padding: 1px 7px; }
+  button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible,
+  .scene-header input[type="checkbox"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   pre.prompt { margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 12.5px; white-space: pre-wrap; color: var(--text); }
-  pre.prompt:focus { outline: 1px solid var(--accent); outline-offset: -1px; }
+    font-size: 12.5px; white-space: pre-wrap; color: var(--text); cursor: text; }
+  pre.prompt:hover { box-shadow: inset 0 0 0 1px var(--border); }
+  pre.prompt:focus { outline: 1px solid var(--accent); outline-offset: -1px; box-shadow: none; }
   pre.prompt-mirror { margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
     font-size: 12.5px; white-space: pre-wrap; color: var(--text-dim); }
+  .mirror-stale { padding: 8px 16px; font-size: 12px; color: var(--warn);
+    background: rgba(245,158,11,0.07); border-bottom: 1px solid var(--border); }
   .prod-row { display: flex; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--border);
     align-items: center; flex-wrap: wrap; }
   .prod-row select, .prod-row input { background: var(--panel); color: var(--text);
@@ -79,6 +86,7 @@
     Текст промпта редактируется кликом — правки живут только в этом браузере (упомяни их, когда попросишь Claude о ревизии). Кнопка RU показывает перевод; Copy всегда копирует английский.
     Шоткаты: <b>Ctrl+Z / Ctrl+Y</b> — отмена/повтор при редактировании · <b>Ctrl+Shift+C</b> — скопировать промпт под курсором · <b>Ctrl+Shift+L</b> — RU/EN · <b>Esc</b> — выйти из редактирования.
     Генерация не удалась? Открой Repair Guide. Нужны правки? Просто отдай этот файл Claude.
+    <button class="tool-btn" id="export-edits" style="margin-left:6px" title="Скопировать все отредактированные промпты — вставь их в чат Claude, чтобы правки попали в файл и переводы обновились">Export edits</button>
   </div>
 
   <details class="top-block" open><summary>📦 Asset Checklist — собери ДО генерации</summary>
@@ -134,12 +142,12 @@ Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
         <span class="badge">🔴 high-risk — толпа у барьеров + взаимодействие с продуктом</span>
         <span class="prompt-actions">
           <span class="edited-badge" data-prompt-id="1a" hidden>edited</span>
-          <button class="tool-btn reset-btn" data-prompt-id="1a" hidden>Reset</button>
-          <button class="tool-btn lang-btn">RU</button>
-          <button class="copy-btn">Copy</button>
+          <button class="tool-btn reset-btn" data-prompt-id="1a" hidden title="Вернуть исходный сгенерированный текст">Reset</button>
+          <button class="tool-btn lang-btn" title="Показать перевод (Ctrl+Shift+L)" aria-pressed="false">RU</button>
+          <button class="copy-btn" title="Скопировать промпт для Seedance (Ctrl+Shift+C)">Copy</button>
         </span>
       </div>
-      <pre class="prompt" data-prompt-id="1a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+      <pre class="prompt" lang="en" data-prompt-id="1a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
 Camera: Physical cine lens. 180° shutter motion blur.
 Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
@@ -170,6 +178,7 @@ He tips the bottle back and drinks — throat working in long swallows, one bead
 ENDS ON: close on his hand around the bottle, thumb resting on the glowing aqua ring, his exhausted half-smile soft in the background. (Scene 2 match-cuts from this exact thumb-on-ring gesture.)
 
 SFX: ragged breathing and slowing footfalls → crowd applause and barrier-board drumming at mid-distance → the seal-pop of the cap, long swallows, one deep exhale.</pre>
+      <div class="mirror-stale" data-prompt-id="1a" hidden>⚠ Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
       <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
 Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
 Камера: физическая кинооптика. Смаз движения при затворе 180°.
@@ -225,12 +234,12 @@ SFX: рваное дыхание и замедляющиеся шаги → ап
         <span class="badge">🟡 tricky — два диалоговых бита + двухперсонажный блокинг</span>
         <span class="prompt-actions">
           <span class="edited-badge" data-prompt-id="2a" hidden>edited</span>
-          <button class="tool-btn reset-btn" data-prompt-id="2a" hidden>Reset</button>
-          <button class="tool-btn lang-btn">RU</button>
-          <button class="copy-btn">Copy</button>
+          <button class="tool-btn reset-btn" data-prompt-id="2a" hidden title="Вернуть исходный сгенерированный текст">Reset</button>
+          <button class="tool-btn lang-btn" title="Показать перевод (Ctrl+Shift+L)" aria-pressed="false">RU</button>
+          <button class="copy-btn" title="Скопировать промпт для Seedance (Ctrl+Shift+C)">Copy</button>
         </span>
       </div>
-      <pre class="prompt" data-prompt-id="2a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+      <pre class="prompt" lang="en" data-prompt-id="2a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
 Camera: Physical cine lens. 180° shutter motion blur.
 Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
@@ -262,6 +271,7 @@ Mark takes a breath first — then, quiet and level, no bravado, just fact: "Tod
 ENDS ON: medium on Mark, bottle secured at his hip, chin lifting toward the door; Lena frame-left already back in the split chart. (Scene 3 match-cuts to the bottle rising between them at the finish.)
 
 SFX: the cooler's gurgle dying out → pre-dawn quiet, a knuckle tapping glass twice, her line dry and close → his line, quieter; the soft click of the bottle into the belt clip.</pre>
+      <div class="mirror-stale" data-prompt-id="2a" hidden>⚠ Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
       <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
 Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
 Камера: физическая кинооптика. Смаз движения при затворе 180°.
@@ -318,12 +328,12 @@ SFX: бульканье кулера затихает → предрассвет
         <span class="badge">🔴 high-risk — толпа + контакт двух персонажей в кадре</span>
         <span class="prompt-actions">
           <span class="edited-badge" data-prompt-id="3a" hidden>edited</span>
-          <button class="tool-btn reset-btn" data-prompt-id="3a" hidden>Reset</button>
-          <button class="tool-btn lang-btn">RU</button>
-          <button class="copy-btn">Copy</button>
+          <button class="tool-btn reset-btn" data-prompt-id="3a" hidden title="Вернуть исходный сгенерированный текст">Reset</button>
+          <button class="tool-btn lang-btn" title="Показать перевод (Ctrl+Shift+L)" aria-pressed="false">RU</button>
+          <button class="copy-btn" title="Скопировать промпт для Seedance (Ctrl+Shift+C)">Copy</button>
         </span>
       </div>
-      <pre class="prompt" data-prompt-id="3a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+      <pre class="prompt" lang="en" data-prompt-id="3a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
 Camera: Physical cine lens. 180° shutter motion blur.
 Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
@@ -354,6 +364,7 @@ Their two silhouettes against the haze and the finish arch — coach and runner,
 ENDS ON: wide from behind — the pair small against the arch, the bottle between them catching a glint of aqua LED. (The packshot opens on that glint.)
 
 SFX: crowd roar swelling from the first frame, barrier boards drumming → the slap of her hands on his shoulders, two ragged laughs close and low under the roar.</pre>
+      <div class="mirror-stale" data-prompt-id="3a" hidden>⚠ Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
       <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
 Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
 Камера: физическая кинооптика. Смаз движения при затворе 180°.
@@ -401,12 +412,12 @@ SFX: рёв толпы с первого кадра, стук по щитам б
         <span class="badge">🟢 safe — продукт, статика, без людей</span>
         <span class="prompt-actions">
           <span class="edited-badge" data-prompt-id="3b" hidden>edited</span>
-          <button class="tool-btn reset-btn" data-prompt-id="3b" hidden>Reset</button>
-          <button class="tool-btn lang-btn">RU</button>
-          <button class="copy-btn">Copy</button>
+          <button class="tool-btn reset-btn" data-prompt-id="3b" hidden title="Вернуть исходный сгенерированный текст">Reset</button>
+          <button class="tool-btn lang-btn" title="Показать перевод (Ctrl+Shift+L)" aria-pressed="false">RU</button>
+          <button class="copy-btn" title="Скопировать промпт для Seedance (Ctrl+Shift+C)">Copy</button>
         </span>
       </div>
-      <pre class="prompt" data-prompt-id="3b">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+      <pre class="prompt" lang="en" data-prompt-id="3b">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
 Camera: Physical cine lens. 180° shutter motion blur.
 Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
@@ -431,6 +442,7 @@ It opens on a glint of aqua LED — the same glint that closed scene 3. Condensa
 ENDS ON: static face-on framing of the bottle, logo centered, LED ring in steady glow — the final frame of the ad.
 
 SFX: near-silence — a faint air-tone, the almost-subliminal tick of a condensation drop meeting glass.</pre>
+      <div class="mirror-stale" data-prompt-id="3b" hidden>⚠ Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
       <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
 Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
 Камера: физическая кинооптика. Смаз движения при затворе 180°.
@@ -542,18 +554,38 @@ SFX: почти тишина — тонкий воздушный тон, едв�
     });
   });
 
-  // Editable prompts: persist local edits, Reset restores the generated original
+  // Editable prompts: persist local edits, Reset restores the generated original.
+  // The translation mirror is generated for the ORIGINAL text — when a local edit
+  // exists and the mirror is visible, a stale-translation notice is shown.
+  const updateStale = block => {
+    const stale = block.querySelector('.mirror-stale');
+    const ru = block.querySelector('pre.prompt-mirror');
+    if (stale) stale.hidden = !(ru && !ru.hidden && block.dataset.edited === '1');
+  };
   const originals = new Map();
   document.querySelectorAll('pre.prompt').forEach(pre => {
     const id = pre.dataset.promptId;
+    const block = pre.closest('.prompt-block');
     originals.set(id, pre.textContent);
     const key = K('p-' + id + '-edit');
     const badge = document.querySelector('.edited-badge[data-prompt-id="' + id + '"]');
     const resetBtn = document.querySelector('.reset-btn[data-prompt-id="' + id + '"]');
-    const mark = edited => { if (badge) badge.hidden = !edited; if (resetBtn) resetBtn.hidden = !edited; };
+    const mark = edited => {
+      if (badge) badge.hidden = !edited;
+      if (resetBtn) resetBtn.hidden = !edited;
+      block.dataset.edited = edited ? '1' : '';
+      updateStale(block);
+    };
     const saved = localStorage.getItem(key);
     if (saved !== null) { pre.textContent = saved; mark(true); } else mark(false);
     try { pre.contentEditable = 'plaintext-only'; } catch(e) { pre.contentEditable = 'true'; }
+    // Force plain text on paste/drop — pasted HTML must never become DOM
+    pre.addEventListener('paste', e => {
+      e.preventDefault();
+      const t = (e.clipboardData || window.clipboardData).getData('text/plain');
+      document.execCommand('insertText', false, t);
+    });
+    pre.addEventListener('drop', e => e.preventDefault());
     pre.addEventListener('input', () => { localStorage.setItem(key, pre.textContent); mark(true); });
     if (resetBtn) resetBtn.addEventListener('click', () => {
       pre.textContent = originals.get(id); localStorage.removeItem(key); mark(false);
@@ -570,6 +602,32 @@ SFX: почти тишина — тонкий воздушный тон, едв�
       const showRu = ru.hidden;
       ru.hidden = !showRu; en.hidden = showRu;
       btn.textContent = showRu ? 'EN' : 'RU';
+      btn.classList.toggle('active', showRu);
+      btn.setAttribute('aria-pressed', showRu ? 'true' : 'false');
+      updateStale(block);
+    });
+  });
+
+  // Export edits: copy all locally edited prompts as a paste-ready block for Claude
+  const exportBtn = document.getElementById('export-edits');
+  if (exportBtn) exportBtn.addEventListener('click', () => {
+    const parts = [];
+    document.querySelectorAll('pre.prompt').forEach(pre => {
+      const id = pre.dataset.promptId;
+      if (localStorage.getItem(K('p-' + id + '-edit')) !== null) {
+        parts.push('=== Prompt ' + id + ' (edited) ===\n' + pre.textContent);
+      }
+    });
+    const done = n => { const o = exportBtn.textContent; exportBtn.textContent = n;
+      setTimeout(() => { exportBtn.textContent = o; }, 2000); };
+    if (!parts.length) { done('Нет правок'); return; }
+    const payload = 'Мои ручные правки промптов — внеси их в shotlist.html и обнови переводы:\n\n' + parts.join('\n\n');
+    const write = navigator.clipboard && navigator.clipboard.writeText
+      ? navigator.clipboard.writeText(payload) : Promise.reject();
+    write.then(() => done('Скопировано: ' + parts.length)).catch(() => {
+      try { const ta = document.createElement('textarea'); ta.value = payload; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        done('Скопировано: ' + parts.length); } catch(e) { done('Ошибка копирования'); }
     });
   });
 

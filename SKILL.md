@@ -259,6 +259,8 @@ If the file is on disk but the conversation context is fresh, **read the Project
 
 If a revision inserts a scene between existing ones, prefer suffix numbering (`2.5` or `2-bis`) over renumbering, so saved progress on scenes 3+ survives.
 
+**Exported edits.** If the user pastes an "Export edits" block (`=== Prompt 1a (edited) === …`), those texts are the new source of truth: bake each one into its prompt in the HTML as the new original, regenerate that prompt's language mirror to match, keep everything else untouched, and tell the user their local edits are now permanent (they can clear them — the baked file now matches, so localStorage edits are redundant; Reset will restore the new baked version).
+
 ---
 
 ## HTML output template
@@ -276,7 +278,11 @@ Key requirements:
 - **Scene checkbox** (one per scene even when split into 3a/3b/3c) — key `sd-{slug}-scene-{n}-done`
 - Copy button uses `navigator.clipboard` with a fallback (`document.execCommand('copy')` on a temporary textarea) and visibly reports failure — never fails silently.
 - **Editable prompts**: `pre.prompt` carries `data-prompt-id` and is made `contenteditable="plaintext-only"` (fallback `true`). On input, the current text saves to `sd-{slug}-p-{promptId}-edit`; an "edited" badge and a Reset button appear. Reset restores the original (captured into a JS Map at load, before applying saved edits) and clears the key. Copy copies the current DOM text — edits included. The howto warns: manual edits live only in this browser; when asking Claude for revisions, mention them or paste the edited prompt.
-- **Language mirror**: if the user's language is not English, every prompt gets a second `<pre class="prompt-mirror" hidden>` with a faithful translation written at generation time — never machine-translated at runtime, the file stays offline. Dialogue lines stay in English with a «…» translation in parentheses. A per-prompt EN/RU toggle button swaps which `<pre>` is visible; the mirror is read-only and Copy ignores it. After manual edits the mirror can lag behind the English text — that's acceptable; the edited badge signals it.
+- **Language mirror**: if the user's language is not English, every prompt gets a second `<pre class="prompt-mirror" hidden>` with a faithful translation written at generation time — never machine-translated at runtime, the file stays offline. Dialogue lines stay in English with a «…» translation in parentheses. A per-prompt EN/RU toggle button swaps which `<pre>` is visible; the mirror is read-only and Copy ignores it.
+- **Stale-translation notice**: the mirror translates the ORIGINAL prompt. When a local edit exists AND the mirror is visible, show a `.mirror-stale` banner above it («перевод соответствует исходной версии — Export edits → попроси Claude обновить»). Hidden again after Reset.
+- **Export edits**: a global "Export edits" button in the howto block collects every locally edited prompt (`sd-{slug}-p-*-edit`) into one paste-ready text («=== Prompt 1a (edited) === …») and copies it to the clipboard — this is the bridge that gets browser-local edits back to Claude for baking in and re-translating.
+- **Paste hygiene**: prompts force plain text — `paste` is intercepted (`preventDefault` + `insertText` with `text/plain`) and `drop` is blocked, so pasted rich content can never inject markup into the DOM even where `plaintext-only` isn't supported.
+- **Accessibility & viewport**: `<meta name="viewport">` present; `<html lang>` = the user's language, prompt `<pre>` elements carry `lang="en"`; every button has a `title` tooltip (with its shortcut); `:focus-visible` outlines on buttons, inputs, selects, summaries; the RU toggle exposes `aria-pressed` and an `.active` accent state.
 - **Button layout**: all per-prompt controls (edited badge, Reset, RU/EN, Copy) sit together in one `.prompt-actions` group pushed to the right edge of the label row (`margin-left: auto`) — never scattered across the row.
 - **Keyboard shortcuts**: native editing shortcuts (Ctrl+Z/Ctrl+Y undo-redo, Ctrl+C/X/V, Ctrl+A) work inside prompts via contenteditable; add board-level bindings — Ctrl/Cmd+Shift+C copies the prompt under the cursor or being edited, Ctrl/Cmd+Shift+L toggles the language mirror, Esc blurs editing. List the shortcuts in the howto.
 - Collapsible blocks at the top: Asset Checklist, Style Prefix (core), Repair Guide.
@@ -289,9 +295,10 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
 
 ```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru"> <!-- the user's language; prompt <pre> elements carry lang="en" -->
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{PROJECT_TITLE}} — Director's Shotlist</title>
 <style>
   :root {
@@ -343,13 +350,19 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
     border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
     text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit; }
   .tool-btn:hover { border-color: var(--text-dim); color: var(--text); }
+  .tool-btn.active { color: var(--accent); border-color: var(--accent); }
   .edited-badge { font-size: 10px; color: var(--warn); border: 1px solid var(--warn);
     border-radius: 10px; padding: 1px 7px; }
+  button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible,
+  .scene-header input[type="checkbox"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   pre.prompt { margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 12.5px; white-space: pre-wrap; color: var(--text); }
-  pre.prompt:focus { outline: 1px solid var(--accent); outline-offset: -1px; }
+    font-size: 12.5px; white-space: pre-wrap; color: var(--text); cursor: text; }
+  pre.prompt:hover { box-shadow: inset 0 0 0 1px var(--border); }
+  pre.prompt:focus { outline: 1px solid var(--accent); outline-offset: -1px; box-shadow: none; }
   pre.prompt-mirror { margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
     font-size: 12.5px; white-space: pre-wrap; color: var(--text-dim); }
+  .mirror-stale { padding: 8px 16px; font-size: 12px; color: var(--warn);
+    background: rgba(245,158,11,0.07); border-bottom: 1px solid var(--border); }
   .prod-row { display: flex; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--border);
     align-items: center; flex-wrap: wrap; }
   .prod-row select, .prod-row input { background: var(--panel); color: var(--text);
@@ -369,6 +382,7 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
     Prompts are click-to-edit; local edits live only in this browser — mention them (or paste the edited prompt) when asking Claude for revisions. RU/EN toggles the translation; Copy always copies English.
     Shortcuts: <b>Ctrl+Z / Ctrl+Y</b> — undo/redo while editing · <b>Ctrl+Shift+C</b> — copy the prompt under the cursor · <b>Ctrl+Shift+L</b> — RU/EN · <b>Esc</b> — finish editing.
     A generation failed? Open the Repair Guide. Want changes? Give this file back to Claude.
+    <button class="tool-btn" id="export-edits" style="margin-left:6px" title="Скопировать все отредактированные промпты — вставь их в чат Claude, чтобы правки попали в файл и переводы обновились">Export edits</button>
   </div>
 
   <details class="top-block" open><summary>📦 Asset Checklist — build these before generating</summary>
@@ -431,18 +445,38 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
     });
   });
 
-  // Editable prompts: persist local edits, Reset restores the generated original
+  // Editable prompts: persist local edits, Reset restores the generated original.
+  // The translation mirror is generated for the ORIGINAL text — when a local edit
+  // exists and the mirror is visible, a stale-translation notice is shown.
+  const updateStale = block => {
+    const stale = block.querySelector('.mirror-stale');
+    const ru = block.querySelector('pre.prompt-mirror');
+    if (stale) stale.hidden = !(ru && !ru.hidden && block.dataset.edited === '1');
+  };
   const originals = new Map();
   document.querySelectorAll('pre.prompt').forEach(pre => {
     const id = pre.dataset.promptId;
+    const block = pre.closest('.prompt-block');
     originals.set(id, pre.textContent);
     const key = K('p-' + id + '-edit');
     const badge = document.querySelector('.edited-badge[data-prompt-id="' + id + '"]');
     const resetBtn = document.querySelector('.reset-btn[data-prompt-id="' + id + '"]');
-    const mark = edited => { if (badge) badge.hidden = !edited; if (resetBtn) resetBtn.hidden = !edited; };
+    const mark = edited => {
+      if (badge) badge.hidden = !edited;
+      if (resetBtn) resetBtn.hidden = !edited;
+      block.dataset.edited = edited ? '1' : '';
+      updateStale(block);
+    };
     const saved = localStorage.getItem(key);
     if (saved !== null) { pre.textContent = saved; mark(true); } else mark(false);
     try { pre.contentEditable = 'plaintext-only'; } catch(e) { pre.contentEditable = 'true'; }
+    // Force plain text on paste/drop — pasted HTML must never become DOM
+    pre.addEventListener('paste', e => {
+      e.preventDefault();
+      const t = (e.clipboardData || window.clipboardData).getData('text/plain');
+      document.execCommand('insertText', false, t);
+    });
+    pre.addEventListener('drop', e => e.preventDefault());
     pre.addEventListener('input', () => { localStorage.setItem(key, pre.textContent); mark(true); });
     if (resetBtn) resetBtn.addEventListener('click', () => {
       pre.textContent = originals.get(id); localStorage.removeItem(key); mark(false);
@@ -459,6 +493,32 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
       const showRu = ru.hidden;
       ru.hidden = !showRu; en.hidden = showRu;
       btn.textContent = showRu ? 'EN' : 'RU';
+      btn.classList.toggle('active', showRu);
+      btn.setAttribute('aria-pressed', showRu ? 'true' : 'false');
+      updateStale(block);
+    });
+  });
+
+  // Export edits: copy all locally edited prompts as a paste-ready block for Claude
+  const exportBtn = document.getElementById('export-edits');
+  if (exportBtn) exportBtn.addEventListener('click', () => {
+    const parts = [];
+    document.querySelectorAll('pre.prompt').forEach(pre => {
+      const id = pre.dataset.promptId;
+      if (localStorage.getItem(K('p-' + id + '-edit')) !== null) {
+        parts.push('=== Prompt ' + id + ' (edited) ===\n' + pre.textContent);
+      }
+    });
+    const done = n => { const o = exportBtn.textContent; exportBtn.textContent = n;
+      setTimeout(() => { exportBtn.textContent = o; }, 2000); };
+    if (!parts.length) { done('Нет правок'); return; }
+    const payload = 'Мои ручные правки промптов — внеси их в shotlist.html и обнови переводы:\n\n' + parts.join('\n\n');
+    const write = navigator.clipboard && navigator.clipboard.writeText
+      ? navigator.clipboard.writeText(payload) : Promise.reject();
+    write.then(() => done('Скопировано: ' + parts.length)).catch(() => {
+      try { const ta = document.createElement('textarea'); ta.value = payload; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        done('Скопировано: ' + parts.length); } catch(e) { done('Ошибка копирования'); }
     });
   });
 
@@ -507,12 +567,13 @@ Each scene block in `{{SCENES_HTML}}` follows this pattern:
       <span class="badge">🟡 tricky — two-person blocking</span>
       <span class="prompt-actions">
         <span class="edited-badge" data-prompt-id="3a" hidden>edited</span>
-        <button class="tool-btn reset-btn" data-prompt-id="3a" hidden>Reset</button>
-        <button class="tool-btn lang-btn">RU</button>
-        <button class="copy-btn">Copy</button>
+        <button class="tool-btn reset-btn" data-prompt-id="3a" hidden title="Вернуть исходный сгенерированный текст">Reset</button>
+        <button class="tool-btn lang-btn" title="Показать перевод (Ctrl+Shift+L)" aria-pressed="false">RU</button>
+        <button class="copy-btn" title="Скопировать промпт для Seedance (Ctrl+Shift+C)">Copy</button>
       </span>
     </div>
-    <pre class="prompt" data-prompt-id="3a">[FULL PROMPT — Style CORE, Lighting, Characters (@refs), Scene, CUTs, ENDS ON, SFX]</pre>
+    <pre class="prompt" lang="en" data-prompt-id="3a">[FULL PROMPT — Style CORE, Lighting, Characters (@refs), Scene, CUTs, ENDS ON, SFX]</pre>
+    <div class="mirror-stale" data-prompt-id="3a" hidden>⚠ Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
     <pre class="prompt-mirror" hidden>[Полное зеркало промпта на языке пользователя — только для чтения; реплики остаются на английском с переводом в «…»]</pre>
     <div class="prod-row">
       <select data-prompt-field="status" data-prompt-id="3a">
