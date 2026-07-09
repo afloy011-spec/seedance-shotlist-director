@@ -48,8 +48,17 @@
   .copy-btn:hover { border-color: var(--accent); }
   .copy-btn.copied { color: var(--done); border-color: var(--done); }
   .copy-btn.failed { color: var(--risk); border-color: var(--risk); }
+  .tool-btn { background: transparent; color: var(--text-dim); border: 1px solid var(--border);
+    border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit; }
+  .tool-btn:hover { border-color: var(--text-dim); color: var(--text); }
+  .edited-badge { font-size: 10px; color: var(--warn); border: 1px solid var(--warn);
+    border-radius: 10px; padding: 1px 7px; }
   pre.prompt { margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
     font-size: 12.5px; white-space: pre-wrap; color: var(--text); }
+  pre.prompt:focus { outline: 1px solid var(--accent); outline-offset: -1px; }
+  pre.prompt-mirror { margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px; white-space: pre-wrap; color: var(--text-dim); }
   .prod-row { display: flex; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--border);
     align-items: center; flex-wrap: wrap; }
   .prod-row select, .prod-row input { background: var(--panel); color: var(--text);
@@ -66,6 +75,7 @@
   <div class="howto">
     Сначала собери все ассеты из чеклиста, генерируй 🔴-промпты первыми.
     Copy забирает полный автономный промпт. Отмечай статус / таймкод кипера / заметки — всё сохраняется само.
+    Текст промпта редактируется кликом — правки живут только в этом браузере (упомяни их, когда попросишь Claude о ревизии). Кнопка RU показывает перевод; Copy всегда копирует английский.
     Генерация не удалась? Открой Repair Guide. Нужны правки? Просто отдай этот файл Claude.
   </div>
 
@@ -120,9 +130,12 @@ Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
       <div class="prompt-label">
         <span>Prompt 1a · 15s → ~8s final</span>
         <span class="badge">🔴 high-risk — толпа у барьеров + взаимодействие с продуктом</span>
+        <span class="edited-badge" data-prompt-id="1a" hidden>edited</span>
+        <button class="tool-btn lang-btn">RU</button>
+        <button class="tool-btn reset-btn" data-prompt-id="1a" hidden>Reset</button>
         <button class="copy-btn">Copy</button>
       </div>
-      <pre class="prompt">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+      <pre class="prompt" data-prompt-id="1a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
 Camera: Physical cine lens. 180° shutter motion blur.
 Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
@@ -153,6 +166,37 @@ He tips the bottle back and drinks — throat working in long swallows, one bead
 ENDS ON: close on his hand around the bottle, thumb resting on the glowing aqua ring, his exhausted half-smile soft in the background. (Scene 2 match-cuts from this exact thumb-on-ring gesture.)
 
 SFX: ragged breathing and slowing footfalls → crowd applause and barrier-board drumming at mid-distance → the seal-pop of the cap, long swallows, one deep exhale.</pre>
+      <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
+Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
+Камера: физическая кинооптика. Смаз движения при затворе 180°.
+Кожа: реализм уровня пор — пушковые волосы, асимметричные родинки, капиллярный румянец, тени пор согласованы со светом площадки.
+Актёрская игра: голливудская — микро-паузы перед реакциями, точный взгляд, живые глаза с бликами, грудь поднимается от дыхания. Персонажи никогда не стоят статично, всегда реагируют.
+Физика: гравитация и инерция соблюдены — масса имеет реальный вес, корректные контактные тени. Никаких парящих предметов.
+Композиция: правило третей + золотое сечение. Каждый человек в движении с первого кадра.
+Непрерывность: персонажи, реквизит, окружение идентичны в каждом кате. Без дрейфа идентичности.
+Техника: 24fps, плавное движение. Детализация 8K. Без джиттера.
+Звук: только диегетические диалоги и естественные шумы. Без музыки. Без субтитров.
+Свет: только естественный — яркое позднеутреннее солнце, высокое и слегка фронтальное, чёткие тени на асфальте, лёгкая дымка вдоль финишной прямой. Без контрового света на лице.
+
+Персонажи:
+МАРК (@mark_wet) — поджарый бегун, ~35, короткие тёмные волосы, щетина с проседью, кожа блестит и течёт потом, щёки в глубоком румянце, оранжевый синглет потемнел на груди и спине, номер 2117 смят на уголке.
+Матово-белая смарт-бутылка (@bottle — тонкое аква-LED-кольцо у основания) ждёт в брендированной стойке-кулере.
+
+Сцена:
+Финишная прямая городского марафона (@finish), позднее утро. По layout map: финишная арка позади него, толпа перегибается через барьеры с ОБЕИХ сторон и остаётся за ними, стойка с @bottle в трёх шагах за чертой СПРАВА. Марк пересекает черту сломанным, измотанным шагом.
+
+КАТ 1 — Широкий, трекинг спереди, 35mm, долли назад в темпе его шага:
+Марк (@mark_wet) вваливается за финишную черту, руки падают, бег ломается в шаг. Грудь ходит ходуном; он щурится от света. Толпа хлопает и перегибается через барьеры — никто их не пересекает. Его взгляд находит стойку справа в кадре — секунда чистого желания.
+
+КАТ 2 — Средний на стойке, 50mm, статика:
+Ладонь смыкается на белой бутылке (@bottle) — пальцы вдавливаются в матовую поверхность, конденсат смазывается, бутылка сидит в хвате как влитая. Едва ладонь замыкается, LED-кольцо просыпается: один мягкий аква-пульс. Микро-пауза — большой палец один раз проводит по кольцу, неверие перетекает в усталую полуулыбку.
+
+КАТ 3 — Крупный профиль, 85mm, медленный наезд:
+Он запрокидывает бутылку и пьёт — горло работает длинными глотками, одна капля прорезает чистую дорожку сквозь пот на подбородке. Глаза закрываются. Плечи наконец опускаются. Он опускает бутылку, выдыхает округлёнными губами — и большой палец снова находит LED-кольцо, замирая на нём.
+
+ЗАКАНЧИВАЕТСЯ НА: крупно — рука на бутылке, большой палец на светящемся аква-кольце, его измотанная полуулыбка мягко в фоне. (Сцена 2 открывается match-cut'ом с этого же жеста.)
+
+SFX: рваное дыхание и замедляющиеся шаги → аплодисменты и стук по щитам барьеров на средней дистанции → хлопок крышки, длинные глотки, один глубокий выдох.</pre>
       <div class="prod-row">
         <select data-prompt-field="status" data-prompt-id="1a">
           <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
@@ -175,9 +219,12 @@ SFX: ragged breathing and slowing footfalls → crowd applause and barrier-board
       <div class="prompt-label">
         <span>Prompt 2a · 15s → ~6s final</span>
         <span class="badge">🟡 tricky — два диалоговых бита + двухперсонажный блокинг</span>
+        <span class="edited-badge" data-prompt-id="2a" hidden>edited</span>
+        <button class="tool-btn lang-btn">RU</button>
+        <button class="tool-btn reset-btn" data-prompt-id="2a" hidden>Reset</button>
         <button class="copy-btn">Copy</button>
       </div>
-      <pre class="prompt">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+      <pre class="prompt" data-prompt-id="2a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
 Camera: Physical cine lens. 180° shutter motion blur.
 Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
@@ -209,6 +256,38 @@ Mark takes a breath first — then, quiet and level, no bravado, just fact: "Tod
 ENDS ON: medium on Mark, bottle secured at his hip, chin lifting toward the door; Lena frame-left already back in the split chart. (Scene 3 match-cuts to the bottle rising between them at the finish.)
 
 SFX: the cooler's gurgle dying out → pre-dawn quiet, a knuckle tapping glass twice, her line dry and close → his line, quieter; the soft click of the bottle into the belt clip.</pre>
+      <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
+Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
+Камера: физическая кинооптика. Смаз движения при затворе 180°.
+Кожа: реализм уровня пор — пушковые волосы, асимметричные родинки, капиллярный румянец, тени пор согласованы со светом площадки.
+Актёрская игра: голливудская — микро-паузы перед реакциями, точный взгляд, живые глаза с бликами, грудь поднимается от дыхания. Персонажи никогда не стоят статично, всегда реагируют.
+Физика: гравитация и инерция соблюдены — масса имеет реальный вес, корректные контактные тени. Никаких парящих предметов.
+Композиция: правило третей + золотое сечение. Каждый человек в движении с первого кадра.
+Непрерывность: персонажи, реквизит, окружение идентичны в каждом кате. Без дрейфа идентичности.
+Техника: 24fps, плавное движение. Детализация 8K. Без джиттера.
+Звук: только диегетические диалоги и естественные шумы. Без музыки. Без субтитров.
+Свет: только естественный — предрассветная синева через единственное окно, настольная лампа ВЫКЛЮЧЕНА, комнату освещает только светлеющее небо, мягко и холодно, лёгкая дымка. Без контрового, без римлайта. Без искусственного света.
+
+Персонажи:
+МАРК (@mark) — тот же мужчина, ~35, сухой и отдохнувший, тот же оранжевый синглет — чистый и яркий, номер ещё не приколот.
+ЛЕНА (@lena) — его старшая сестра и тренер, ~40, видавшая виды синяя ветровка с гербом клуба, секундомер на шнурке, планшет в руке, очки для чтения сдвинуты в короткие волосы с проседью.
+Матово-белая смарт-бутылка (@bottle) стоит открытой под кулером клуба.
+
+Сцена:
+Офис бегового клуба (@club) перед рассветом, день гонки. Корборд с картами маршрутов за исцарапанным столом; одно окно наливается бледно-синим. Лена за столом над планшетом, слева в кадре. Марк наполняет @bottle у кулера возле окна, справа в кадре, в шести футах. Эти стороны они держат всю сцену.
+
+КАТ 1 — Match-cut: крупно — большой палец Марка ложится на LED-кольцо закрытой бутылки — теперь сухая рука, чистый синглет — 50mm, лёгкий верхний ракурс:
+Кольцо мигает, просыпаясь: один спокойный аква-пульс. Палец лежит на нём на секунду дольше, чем нужно. Последнее бульканье кулера затихает позади. Перевод фокуса за его руку — на Лену за столом, вне фокуса, постукивающую по планшету.
+
+КАТ 2 — Средний двойной план, 35mm, статика:
+Лена (@lena) не поднимает глаз от планшета; дважды стучит по нему костяшкой и говорит сухо, по делу, без драмы: "Kilometer thirty is where it broke you last year." («Тридцатый километр — там ты сломался в прошлом году».) Пауза. Взгляд всё ещё в графике сплитов. "We fixed it." («Мы это починили».) Марк смотрит на неё, желваки ходят — воспоминание приземляется и убирается на место.
+
+КАТ 3 — Синглы, 85mm, пара через плечо:
+Марк сначала делает вдох — потом тихо и ровно, без бравады, как факт: "Today I finish it." («Сегодня я добегу».) Лена наконец поднимает взгляд, держит его поверх линии очков и коротко, уверенно кивает один раз — кивок человека, который уже всё просчитал. Уголок рта Марка чуть дёргается в улыбке, и он убирает @bottle в пояс.
+
+ЗАКАНЧИВАЕТСЯ НА: средний на Марке, бутылка закреплена на бедре, подбородок поднимается к двери; Лена слева в кадре уже вернулась в график. (Сцена 3 — match-cut на бутылку, взлетающую между ними на финише.)
+
+SFX: бульканье кулера затихает → предрассветная тишина, двойной стук костяшки по стеклу, её реплика сухо и близко → его реплика, тише; мягкий щелчок бутылки в клипсу пояса.</pre>
       <div class="prod-row">
         <select data-prompt-field="status" data-prompt-id="2a">
           <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
@@ -231,9 +310,12 @@ SFX: the cooler's gurgle dying out → pre-dawn quiet, a knuckle tapping glass t
       <div class="prompt-label">
         <span>Prompt 3a · 15s → ~6s final</span>
         <span class="badge">🔴 high-risk — толпа + контакт двух персонажей в кадре</span>
+        <span class="edited-badge" data-prompt-id="3a" hidden>edited</span>
+        <button class="tool-btn lang-btn">RU</button>
+        <button class="tool-btn reset-btn" data-prompt-id="3a" hidden>Reset</button>
         <button class="copy-btn">Copy</button>
       </div>
-      <pre class="prompt">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+      <pre class="prompt" data-prompt-id="3a">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
 Camera: Physical cine lens. 180° shutter motion blur.
 Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
@@ -264,6 +346,37 @@ Their two silhouettes against the haze and the finish arch — coach and runner,
 ENDS ON: wide from behind — the pair small against the arch, the bottle between them catching a glint of aqua LED. (The packshot opens on that glint.)
 
 SFX: crowd roar swelling from the first frame, barrier boards drumming → the slap of her hands on his shoulders, two ragged laughs close and low under the roar.</pre>
+      <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
+Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
+Камера: физическая кинооптика. Смаз движения при затворе 180°.
+Кожа: реализм уровня пор — пушковые волосы, асимметричные родинки, капиллярный румянец, тени пор согласованы со светом площадки.
+Актёрская игра: голливудская — микро-паузы перед реакциями, точный взгляд, живые глаза с бликами, грудь поднимается от дыхания. Персонажи никогда не стоят статично, всегда реагируют.
+Физика: гравитация и инерция соблюдены — масса имеет реальный вес, корректные контактные тени. Никаких парящих предметов.
+Композиция: правило третей + золотое сечение. Каждый человек в движении с первого кадра.
+Непрерывность: персонажи, реквизит, окружение идентичны в каждом кате. Без дрейфа идентичности.
+Техника: 24fps, плавное движение. Детализация 8K. Без джиттера.
+Звук: только диегетические диалоги и естественные шумы. Без музыки. Без субтитров.
+Свет: только естественный — то же яркое позднеутреннее солнце, что в сцене 1, высокое и слегка фронтальное, чёткие тени, лёгкая дымка вдоль прямой. Без контрового света на лицах.
+
+Персонажи:
+МАРК (@mark_wet) — насквозь мокрый от пота, оранжевый синглет потемнел, номер 2117, матово-белая бутылка (@bottle) в правом кулаке, аква-LED-кольцо пульсирует.
+ЛЕНА (@lena) — его тренер, синяя ветровка, секундомер раскачивается на шнурке на ходу.
+
+Сцена:
+Финишная прямая (@finish), через секунды после сцены 1. По layout map: Марк сразу за чертой, в центре; толпа за барьерами с обеих сторон, остаётся за ними; Лена входит через служебный проём в барьере, слева в кадре.
+
+КАТ 1 — Match-cut: бутылка (@bottle) взлетает через кадр в кулаке Марка — камера расширяется, и слева входит Лена, 35mm, хендхелд-срочность:
+Она не бежит — она прибывает, уверенно, секундомер раскачивается. Марк видит её, и всё его измотанное лицо раскрывается. Шум толпы нарастает вокруг.
+
+КАТ 2 — Средний двойной, 50mm, медленный наезд:
+Она берёт его за плечи, он сжимает @bottle, и они сближаются — лоб ко лбу, оба смеются, дыхание рваное. Она говорит что-то, что глотает толпа; он кивает, не отрывая лба. Бутылка поднимается между ними, аква-кольцо пульсирует в центре кадра.
+
+КАТ 3 — Обратный широкий из-за спин, 24mm, статика:
+Два их силуэта на фоне дымки и финишной арки — тренер и бегун, лоб ко лбу, @bottle между ними, толпа тянется с обоих краёв кадра, но не пересекает барьеры. Один долгий триумфальный бит.
+
+ЗАКАНЧИВАЕТСЯ НА: широкий из-за спин — пара маленькая на фоне арки, бутылка между ними ловит блик аква-LED. (Пэкшот открывается этим бликом.)
+
+SFX: рёв толпы с первого кадра, стук по щитам барьеров → шлепок её ладоней по его плечам, два рваных смеха близко и низко под рёвом.</pre>
       <div class="prod-row">
         <select data-prompt-field="status" data-prompt-id="3a">
           <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
@@ -278,9 +391,12 @@ SFX: crowd roar swelling from the first frame, barrier boards drumming → the s
       <div class="prompt-label">
         <span>Prompt 3b · 15s → ~5s final</span>
         <span class="badge">🟢 safe — продукт, статика, без людей</span>
+        <span class="edited-badge" data-prompt-id="3b" hidden>edited</span>
+        <button class="tool-btn lang-btn">RU</button>
+        <button class="tool-btn reset-btn" data-prompt-id="3b" hidden>Reset</button>
         <button class="copy-btn">Copy</button>
       </div>
-      <pre class="prompt">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+      <pre class="prompt" data-prompt-id="3b">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
 Camera: Physical cine lens. 180° shutter motion blur.
 Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
@@ -305,6 +421,31 @@ It opens on a glint of aqua LED — the same glint that closed scene 3. Condensa
 ENDS ON: static face-on framing of the bottle, logo centered, LED ring in steady glow — the final frame of the ad.
 
 SFX: near-silence — a faint air-tone, the almost-subliminal tick of a condensation drop meeting glass.</pre>
+      <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
+Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
+Камера: физическая кинооптика. Смаз движения при затворе 180°.
+Кожа: реализм уровня пор — пушковые волосы, асимметричные родинки, капиллярный румянец, тени пор согласованы со светом площадки.
+Актёрская игра: голливудская — микро-паузы перед реакциями, точный взгляд, живые глаза с бликами, грудь поднимается от дыхания. Персонажи никогда не стоят статично, всегда реагируют.
+Физика: гравитация и инерция соблюдены — масса имеет реальный вес, корректные контактные тени. Никаких парящих предметов.
+Композиция: правило третей + золотое сечение. Каждый человек в движении с первого кадра.
+Непрерывность: персонажи, реквизит, окружение идентичны в каждом кате. Без дрейфа идентичности.
+Техника: 24fps, плавное движение. Детализация 8K. Без джиттера.
+Звук: только диегетические диалоги и естественные шумы. Без музыки. Без субтитров.
+Свет: только естественный — мягкий верхний свет сквозь дымку, плавный градиент фона, холодный аква-отсвет от самого LED-кольца как единственный акцент. Без жёстких теней.
+
+Персонажи:
+(без людей — только продукт)
+Матово-белая смарт-бутылка (@bottle), тонкое аква-LED-кольцо светится у основания, мелкий конденсат бисером на матовом корпусе.
+
+Сцена:
+Пэкшот. @bottle стоит на плинте из дымчатого стекла в мягкой дымке, неглубокая лужица отражения под ней — бутылка стоит намертво, всем весом на стекле.
+
+КАТ 1 — Медленный орбитальный, 50mm с макро-ощущением, 270° вокруг бутылки, одно непрерывное движение:
+Открывается бликом аква-LED — тем же, которым закончилась сцена 3. Капли конденсата медленно сползают по матовому корпусу, каждая подчиняясь гравитации, в лужицу отражения. LED-кольцо дышит — тускло, ярко, тускло — свечение ловит капли. Орбита заканчивается фронтально на гравированном логотипе, кольцо переходит в ровное свечение и держит его.
+
+ЗАКАНЧИВАЕТСЯ НА: статичный фронтальный кадр бутылки, логотип в центре, LED-кольцо в ровном свечении — финальный кадр ролика.
+
+SFX: почти тишина — тонкий воздушный тон, едва различимый тик капли конденсата о стекло.</pre>
       <div class="prod-row">
         <select data-prompt-field="status" data-prompt-id="3b">
           <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
@@ -388,6 +529,37 @@ SFX: near-silence — a faint air-tone, the almost-subliminal tick of a condensa
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(ok).catch(legacy);
       } else { legacy(); }
+    });
+  });
+
+  // Editable prompts: persist local edits, Reset restores the generated original
+  const originals = new Map();
+  document.querySelectorAll('pre.prompt').forEach(pre => {
+    const id = pre.dataset.promptId;
+    originals.set(id, pre.textContent);
+    const key = K('p-' + id + '-edit');
+    const badge = document.querySelector('.edited-badge[data-prompt-id="' + id + '"]');
+    const resetBtn = document.querySelector('.reset-btn[data-prompt-id="' + id + '"]');
+    const mark = edited => { if (badge) badge.hidden = !edited; if (resetBtn) resetBtn.hidden = !edited; };
+    const saved = localStorage.getItem(key);
+    if (saved !== null) { pre.textContent = saved; mark(true); } else mark(false);
+    try { pre.contentEditable = 'plaintext-only'; } catch(e) { pre.contentEditable = 'true'; }
+    pre.addEventListener('input', () => { localStorage.setItem(key, pre.textContent); mark(true); });
+    if (resetBtn) resetBtn.addEventListener('click', () => {
+      pre.textContent = originals.get(id); localStorage.removeItem(key); mark(false);
+    });
+  });
+
+  // EN/RU mirror toggle (mirror is read-only; Copy ignores it)
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const block = btn.closest('.prompt-block');
+      const en = block.querySelector('pre.prompt');
+      const ru = block.querySelector('pre.prompt-mirror');
+      if (!ru) return;
+      const showRu = ru.hidden;
+      ru.hidden = !showRu; en.hidden = showRu;
+      btn.textContent = showRu ? 'EN' : 'RU';
     });
   });
 </script>

@@ -26,6 +26,8 @@ A single HTML file (`shotlist.html`) saved to the current working directory (or 
      - a **final-cut target** ("15s gen → ~3s in final")
      - a **status selector** (⬜ not started / 🔄 generating / ⚠️ retry / ✅ keeper)
      - a **keeper timecode** field ("0:04–0:09") and a **notes** field
+     - **editable text** — the prompt is click-to-edit in place; edits persist in localStorage, an "edited" badge appears, a Reset button restores the generated original, and Copy always grabs the CURRENT text
+     - a **language mirror** (when the user's language isn't English) — a translation of the full prompt pre-generated at build time, behind a RU/EN toggle; reading aid only, Copy always copies the English prompt
 6. **Project Bible** — an embedded `<script type="application/json" id="project-bible">` block holding characters, assets, style decisions, and scene map, so a future Claude session can restore full context from the file alone
 7. A small "How to use" note at the top.
 
@@ -273,6 +275,8 @@ Key requirements:
   - notes `<input>` (free text: "gen 3 best, face ok") — key `sd-{slug}-p-{promptId}-notes`
 - **Scene checkbox** (one per scene even when split into 3a/3b/3c) — key `sd-{slug}-scene-{n}-done`
 - Copy button uses `navigator.clipboard` with a fallback (`document.execCommand('copy')` on a temporary textarea) and visibly reports failure — never fails silently.
+- **Editable prompts**: `pre.prompt` carries `data-prompt-id` and is made `contenteditable="plaintext-only"` (fallback `true`). On input, the current text saves to `sd-{slug}-p-{promptId}-edit`; an "edited" badge and a Reset button appear. Reset restores the original (captured into a JS Map at load, before applying saved edits) and clears the key. Copy copies the current DOM text — edits included. The howto warns: manual edits live only in this browser; when asking Claude for revisions, mention them or paste the edited prompt.
+- **Language mirror**: if the user's language is not English, every prompt gets a second `<pre class="prompt-mirror" hidden>` with a faithful translation written at generation time — never machine-translated at runtime, the file stays offline. Dialogue lines stay in English with a «…» translation in parentheses. A per-prompt EN/RU toggle button swaps which `<pre>` is visible; the mirror is read-only and Copy ignores it. After manual edits the mirror can lag behind the English text — that's acceptable; the edited badge signals it.
 - Collapsible blocks at the top: Asset Checklist, Style Prefix (core), Repair Guide.
 - Runtime summary line under the title: target final length · prompt count · total generation seconds.
 - Risk badge and final-cut target shown in each prompt's label row.
@@ -332,8 +336,17 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
   .copy-btn:hover { border-color: var(--accent); }
   .copy-btn.copied { color: var(--done); border-color: var(--done); }
   .copy-btn.failed { color: var(--risk); border-color: var(--risk); }
+  .tool-btn { background: transparent; color: var(--text-dim); border: 1px solid var(--border);
+    border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit; }
+  .tool-btn:hover { border-color: var(--text-dim); color: var(--text); }
+  .edited-badge { font-size: 10px; color: var(--warn); border: 1px solid var(--warn);
+    border-radius: 10px; padding: 1px 7px; }
   pre.prompt { margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
     font-size: 12.5px; white-space: pre-wrap; color: var(--text); }
+  pre.prompt:focus { outline: 1px solid var(--accent); outline-offset: -1px; }
+  pre.prompt-mirror { margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px; white-space: pre-wrap; color: var(--text-dim); }
   .prod-row { display: flex; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--border);
     align-items: center; flex-wrap: wrap; }
   .prod-row select, .prod-row input { background: var(--panel); color: var(--text);
@@ -350,6 +363,7 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
   <div class="howto">
     Build every asset in the checklist FIRST, generate 🔴 high-risk prompts first.
     Copy grabs the full standalone prompt. Track status / keeper timecode / notes per prompt — everything saves automatically.
+    Prompts are click-to-edit; local edits live only in this browser — mention them (or paste the edited prompt) when asking Claude for revisions. RU/EN toggles the translation; Copy always copies English.
     A generation failed? Open the Repair Guide. Want changes? Give this file back to Claude.
   </div>
 
@@ -395,7 +409,7 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
     if (el.tagName === 'INPUT') el.addEventListener('input', () => localStorage.setItem(key, el.value));
   });
 
-  // Copy buttons with fallback
+  // Copy buttons with fallback — always copies the ENGLISH prompt, edits included
   document.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const text = btn.closest('.prompt-block').querySelector('pre.prompt').textContent;
@@ -410,6 +424,37 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(ok).catch(legacy);
       } else { legacy(); }
+    });
+  });
+
+  // Editable prompts: persist local edits, Reset restores the generated original
+  const originals = new Map();
+  document.querySelectorAll('pre.prompt').forEach(pre => {
+    const id = pre.dataset.promptId;
+    originals.set(id, pre.textContent);
+    const key = K('p-' + id + '-edit');
+    const badge = document.querySelector('.edited-badge[data-prompt-id="' + id + '"]');
+    const resetBtn = document.querySelector('.reset-btn[data-prompt-id="' + id + '"]');
+    const mark = edited => { if (badge) badge.hidden = !edited; if (resetBtn) resetBtn.hidden = !edited; };
+    const saved = localStorage.getItem(key);
+    if (saved !== null) { pre.textContent = saved; mark(true); } else mark(false);
+    try { pre.contentEditable = 'plaintext-only'; } catch(e) { pre.contentEditable = 'true'; }
+    pre.addEventListener('input', () => { localStorage.setItem(key, pre.textContent); mark(true); });
+    if (resetBtn) resetBtn.addEventListener('click', () => {
+      pre.textContent = originals.get(id); localStorage.removeItem(key); mark(false);
+    });
+  });
+
+  // EN/RU mirror toggle (mirror is read-only; Copy ignores it)
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const block = btn.closest('.prompt-block');
+      const en = block.querySelector('pre.prompt');
+      const ru = block.querySelector('pre.prompt-mirror');
+      if (!ru) return;
+      const showRu = ru.hidden;
+      ru.hidden = !showRu; en.hidden = showRu;
+      btn.textContent = showRu ? 'EN' : 'RU';
     });
   });
 </script>
@@ -431,9 +476,13 @@ Each scene block in `{{SCENES_HTML}}` follows this pattern:
     <div class="prompt-label">
       <span>Prompt 3a · 15s → ~4s final</span>
       <span class="badge">🟡 tricky — two-person blocking</span>
+      <span class="edited-badge" data-prompt-id="3a" hidden>edited</span>
+      <button class="tool-btn lang-btn">RU</button>
+      <button class="tool-btn reset-btn" data-prompt-id="3a" hidden>Reset</button>
       <button class="copy-btn">Copy</button>
     </div>
-    <pre class="prompt">[FULL PROMPT — Style CORE, Lighting, Characters (@refs), Scene, CUTs, ENDS ON, SFX]</pre>
+    <pre class="prompt" data-prompt-id="3a">[FULL PROMPT — Style CORE, Lighting, Characters (@refs), Scene, CUTs, ENDS ON, SFX]</pre>
+    <pre class="prompt-mirror" hidden>[Полное зеркало промпта на языке пользователя — только для чтения; реплики остаются на английском с переводом в «…»]</pre>
     <div class="prod-row">
       <select data-prompt-field="status" data-prompt-id="3a">
         <option value="">⬜ not started</option><option value="gen">🔄 generating</option>

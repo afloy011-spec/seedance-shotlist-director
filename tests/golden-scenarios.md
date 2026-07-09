@@ -55,6 +55,7 @@ Scored (grade 1–10, target ≥8 each):
 - [ ] S6. Layout map described in the Asset Checklist where staging is complex (G2 campsite; G3 optional)
 - [ ] S7. Match-cuts designed between scenes where the material allows
 - [ ] S8. Center-safe composition noted in CUT framing (reframe-ready for 9:16/1:1)
+- [ ] S9. Prompts are click-to-edit with persisted edits + Reset; non-English user gets a read-only language mirror per prompt (RU/EN toggle), Copy always copies English
 
 Revision probe (run after any golden, using its output):
 
