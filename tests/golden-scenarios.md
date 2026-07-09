@@ -10,7 +10,7 @@ Any edit to `SKILL.md` gets re-run against these three scenarios. Generate a sho
 
 **Stresses:** minimal input (does the director invent blocking, light, micro-acting?), a dialogue-free two-person emotional beat, one prompt with full 15s of air, contre-jour trap (night interior — default backlight must be replaced with laundromat practicals... which are ARTIFICIAL: the "natural light only" line must be adapted, not copy-pasted).
 
-**Expected shape:** 1 scene, 1–2 prompts, 🟢/🟡 risk, wet-state asset for the courier (@courier_wet), thermos as hero prop with contact points.
+**Expected shape:** 1 scene, 1–2 prompts, safe/tricky risk, wet-state asset for the courier (@courier_wet), thermos as hero prop with contact points.
 
 ## Scenario G2 — continuity marathon (8 scenes, state decay)
 
@@ -26,7 +26,7 @@ Any edit to `SKILL.md` gets re-run against these three scenarios. Generate a sho
 
 **Stresses:** heavy dialogue (quoted lines with delivery direction, diegetic audio spec), rhythm shift inside one location (slow awkwardness → explosion → still aftermath — prompt splits must follow the DRAMA, not equal 15s arithmetic: the confrontation compressed, the aftermath given air), emotional carry between prompts, restraint rule (her calm > his shouting), single-location continuity (same tools, same car, same light decaying as evening deepens).
 
-**Expected shape:** 1 location, 3–5 scenes/beats, the mother's key line gets its own prompt, aftermath prompt is a long held shot, 🟡 dominant risk profile.
+**Expected shape:** 1 location, 3–5 scenes/beats, the mother's key line gets its own prompt, aftermath prompt is a long held shot, tricky-dominant risk profile.
 
 ---
 
@@ -48,7 +48,7 @@ Blocking (any FAIL rejects the change):
 Scored (grade 1–10, target ≥8 each):
 
 - [ ] S1. Dramatic split — prompt boundaries follow beats, not arithmetic (G3 is the probe)
-- [ ] S2. Risk badges plausible, with reasons; 🔴 generated-first advice present
+- [ ] S2. Risk badges plausible (color-coded text, no emoji), with reasons; high-risk-first advice present
 - [ ] S3. Final-cut targets and runtime summary present and arithmetically consistent
 - [ ] S4. Asset Checklist complete — nothing referenced in prompts is missing from it
 - [ ] S5. Repair Guide present with symptom→fix mappings intact

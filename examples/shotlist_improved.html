@@ -52,6 +52,9 @@
     font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; flex-wrap: wrap; }
   .prompt-actions { display: flex; gap: 8px; margin-left: auto; align-items: center; }
   .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); }
+  .badge.risk-high { color: var(--risk); border-color: var(--risk); }
+  .badge.risk-mid { color: var(--warn); border-color: var(--warn); }
+  .badge.risk-low { color: var(--done); border-color: var(--done); }
   .copy-btn { background: transparent; color: var(--accent); border: 1px solid var(--border);
     border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
     text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit; }
@@ -92,9 +95,9 @@
   </div>
 
   <details class="top-block howto">
-    <summary>ℹ️ Как пользоваться · шоткаты</summary>
+    <summary>Как пользоваться</summary>
     <ul>
-      <li><b>Порядок:</b> собери ассеты из чеклиста → генерируй 🔴-промпты первыми.</li>
+      <li><b>Порядок:</b> собери ассеты из чеклиста → генерируй high-risk промпты первыми.</li>
       <li><b>Copy</b> — полный автономный промпт, всегда на английском.</li>
       <li><b>Клик по тексту промпта</b> — редактирование. Правки живут только в этом браузере: чтобы внести их в файл и обновить перевод — <b>Export edits</b> → вставь в чат Claude.</li>
       <li><b>RU</b> — перевод промпта, только для чтения.</li>
@@ -109,7 +112,7 @@
     </div>
   </details>
 
-  <details class="top-block" open><summary>📦 Asset Checklist — собери ДО генерации</summary>
+  <details class="top-block" open><summary>Asset Checklist — собери до генерации</summary>
     <div class="inner">@mark — герой (сухой, свежий): локнутый фейс-клоузап + фулбоди в оранжевом синглете (Soul Cinema)
 @mark_wet — он же на финише: пот, глубокий румянец, потемневший синглет, скомканный номер 2117 — отдельный вариант, собрать один раз
 @lena — тренер, старшая сестра: синяя ветровка с гербом клуба, секундомер на шнурке, планшет, очки в седеющих волосах
@@ -119,7 +122,7 @@
 Layout map (сцены 1 и 3): линия финиша → 3 шага → стойка-кулер справа; барьеры с толпой по обе стороны; служебный проём в барьере слева</div>
   </details>
 
-  <details class="top-block"><summary>🎨 Global Style Prefix (core — в каждом промпте)</summary>
+  <details class="top-block"><summary>Style Prefix (core — в каждом промпте)</summary>
     <pre>Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 Color: 60:30:10 — dominant / secondary / accent.
 Camera: Physical cine lens. 180° shutter motion blur.
@@ -134,7 +137,7 @@ Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
 + Lighting: своя строка в каждой сцене (см. промпты)</pre>
   </details>
 
-  <details class="top-block"><summary>🔧 Repair Guide — генерация не удалась, что менять?</summary>
+  <details class="top-block"><summary>Repair Guide — генерация не удалась, что менять?</summary>
     <table>
       <tr><th>Симптом</th><th>Правка в промпте</th></tr>
       <tr><td>Лицо/идентичность плывёт между катами</td><td>Усилить Character anchor (конкретнее черты), проверить @-референс, уменьшить число катов в этом промпте</td></tr>
@@ -159,7 +162,7 @@ Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
     <div class="prompt-block">
       <div class="prompt-label">
         <span>Prompt 1a · 15s → ~8s final</span>
-        <span class="badge">🔴 high-risk — толпа у барьеров + взаимодействие с продуктом</span>
+        <span class="badge risk-high">high-risk — толпа у барьеров + взаимодействие с продуктом</span>
         <span class="prompt-actions">
           <span class="edited-badge" data-prompt-id="1a" hidden>edited</span>
           <button class="tool-btn reset-btn" data-prompt-id="1a" hidden title="Вернуть исходный сгенерированный текст">Reset</button>
@@ -198,7 +201,7 @@ He tips the bottle back and drinks — throat working in long swallows, one bead
 ENDS ON: close on his hand around the bottle, thumb resting on the glowing aqua ring, his exhausted half-smile soft in the background. (Scene 2 match-cuts from this exact thumb-on-ring gesture.)
 
 SFX: ragged breathing and slowing footfalls → crowd applause and barrier-board drumming at mid-distance → the seal-pop of the cap, long swallows, one deep exhale.</pre>
-      <div class="mirror-stale" data-prompt-id="1a" hidden>⚠ Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
+      <div class="mirror-stale" data-prompt-id="1a" hidden>Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
       <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
 Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
 Камера: физическая кинооптика. Смаз движения при затворе 180°.
@@ -232,8 +235,8 @@ SFX: ragged breathing and slowing footfalls → crowd applause and barrier-board
 SFX: рваное дыхание и замедляющиеся шаги → аплодисменты и стук по щитам барьеров на средней дистанции → хлопок крышки, длинные глотки, один глубокий выдох.</pre>
       <div class="prod-row">
         <select data-prompt-field="status" data-prompt-id="1a">
-          <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
-          <option value="retry">⚠️ retry</option><option value="keeper">✅ keeper</option>
+          <option value="">не начат</option><option value="gen">генерится</option>
+          <option value="retry">ретрай</option><option value="keeper">кипер</option>
         </select>
         <input class="keeper" data-prompt-field="keeper" data-prompt-id="1a" placeholder="keeper 0:04–0:09">
         <input class="notes" data-prompt-field="notes" data-prompt-id="1a" placeholder="заметки…">
@@ -251,7 +254,7 @@ SFX: рваное дыхание и замедляющиеся шаги → ап
     <div class="prompt-block">
       <div class="prompt-label">
         <span>Prompt 2a · 15s → ~6s final</span>
-        <span class="badge">🟡 tricky — два диалоговых бита + двухперсонажный блокинг</span>
+        <span class="badge risk-mid">tricky — два диалоговых бита + двухперсонажный блокинг</span>
         <span class="prompt-actions">
           <span class="edited-badge" data-prompt-id="2a" hidden>edited</span>
           <button class="tool-btn reset-btn" data-prompt-id="2a" hidden title="Вернуть исходный сгенерированный текст">Reset</button>
@@ -291,7 +294,7 @@ Mark takes a breath first — then, quiet and level, no bravado, just fact: "Tod
 ENDS ON: medium on Mark, bottle secured at his hip, chin lifting toward the door; Lena frame-left already back in the split chart. (Scene 3 match-cuts to the bottle rising between them at the finish.)
 
 SFX: the cooler's gurgle dying out → pre-dawn quiet, a knuckle tapping glass twice, her line dry and close → his line, quieter; the soft click of the bottle into the belt clip.</pre>
-      <div class="mirror-stale" data-prompt-id="2a" hidden>⚠ Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
+      <div class="mirror-stale" data-prompt-id="2a" hidden>Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
       <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
 Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
 Камера: физическая кинооптика. Смаз движения при затворе 180°.
@@ -326,8 +329,8 @@ SFX: the cooler's gurgle dying out → pre-dawn quiet, a knuckle tapping glass t
 SFX: бульканье кулера затихает → предрассветная тишина, двойной стук костяшки по стеклу, её реплика сухо и близко → его реплика, тише; мягкий щелчок бутылки в клипсу пояса.</pre>
       <div class="prod-row">
         <select data-prompt-field="status" data-prompt-id="2a">
-          <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
-          <option value="retry">⚠️ retry</option><option value="keeper">✅ keeper</option>
+          <option value="">не начат</option><option value="gen">генерится</option>
+          <option value="retry">ретрай</option><option value="keeper">кипер</option>
         </select>
         <input class="keeper" data-prompt-field="keeper" data-prompt-id="2a" placeholder="keeper 0:04–0:09">
         <input class="notes" data-prompt-field="notes" data-prompt-id="2a" placeholder="заметки…">
@@ -345,7 +348,7 @@ SFX: бульканье кулера затихает → предрассвет
     <div class="prompt-block">
       <div class="prompt-label">
         <span>Prompt 3a · 15s → ~6s final</span>
-        <span class="badge">🔴 high-risk — толпа + контакт двух персонажей в кадре</span>
+        <span class="badge risk-high">high-risk — толпа + контакт двух персонажей в кадре</span>
         <span class="prompt-actions">
           <span class="edited-badge" data-prompt-id="3a" hidden>edited</span>
           <button class="tool-btn reset-btn" data-prompt-id="3a" hidden title="Вернуть исходный сгенерированный текст">Reset</button>
@@ -384,7 +387,7 @@ Their two silhouettes against the haze and the finish arch — coach and runner,
 ENDS ON: wide from behind — the pair small against the arch, the bottle between them catching a glint of aqua LED. (The packshot opens on that glint.)
 
 SFX: crowd roar swelling from the first frame, barrier boards drumming → the slap of her hands on his shoulders, two ragged laughs close and low under the roar.</pre>
-      <div class="mirror-stale" data-prompt-id="3a" hidden>⚠ Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
+      <div class="mirror-stale" data-prompt-id="3a" hidden>Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
       <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
 Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
 Камера: физическая кинооптика. Смаз движения при затворе 180°.
@@ -418,8 +421,8 @@ SFX: crowd roar swelling from the first frame, barrier boards drumming → the s
 SFX: рёв толпы с первого кадра, стук по щитам барьеров → шлепок её ладоней по его плечам, два рваных смеха близко и низко под рёвом.</pre>
       <div class="prod-row">
         <select data-prompt-field="status" data-prompt-id="3a">
-          <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
-          <option value="retry">⚠️ retry</option><option value="keeper">✅ keeper</option>
+          <option value="">не начат</option><option value="gen">генерится</option>
+          <option value="retry">ретрай</option><option value="keeper">кипер</option>
         </select>
         <input class="keeper" data-prompt-field="keeper" data-prompt-id="3a" placeholder="keeper 0:04–0:09">
         <input class="notes" data-prompt-field="notes" data-prompt-id="3a" placeholder="заметки…">
@@ -429,7 +432,7 @@ SFX: рёв толпы с первого кадра, стук по щитам б
     <div class="prompt-block">
       <div class="prompt-label">
         <span>Prompt 3b · 15s → ~5s final</span>
-        <span class="badge">🟢 safe — продукт, статика, без людей</span>
+        <span class="badge risk-low">safe — продукт, статика, без людей</span>
         <span class="prompt-actions">
           <span class="edited-badge" data-prompt-id="3b" hidden>edited</span>
           <button class="tool-btn reset-btn" data-prompt-id="3b" hidden title="Вернуть исходный сгенерированный текст">Reset</button>
@@ -462,7 +465,7 @@ It opens on a glint of aqua LED — the same glint that closed scene 3. Condensa
 ENDS ON: static face-on framing of the bottle, logo centered, LED ring in steady glow — the final frame of the ad.
 
 SFX: near-silence — a faint air-tone, the almost-subliminal tick of a condensation drop meeting glass.</pre>
-      <div class="mirror-stale" data-prompt-id="3b" hidden>⚠ Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
+      <div class="mirror-stale" data-prompt-id="3b" hidden>Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
       <pre class="prompt-mirror" hidden>Стиль: 8K IMAX. Фотореализм — без 3D-рендера, без игрового движка.
 Цвет: 60:30:10 — доминирующий / вторичный / акцентный.
 Камера: физическая кинооптика. Смаз движения при затворе 180°.
@@ -490,8 +493,8 @@ SFX: near-silence — a faint air-tone, the almost-subliminal tick of a condensa
 SFX: почти тишина — тонкий воздушный тон, едва различимый тик капли конденсата о стекло.</pre>
       <div class="prod-row">
         <select data-prompt-field="status" data-prompt-id="3b">
-          <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
-          <option value="retry">⚠️ retry</option><option value="keeper">✅ keeper</option>
+          <option value="">не начат</option><option value="gen">генерится</option>
+          <option value="retry">ретрай</option><option value="keeper">кипер</option>
         </select>
         <input class="keeper" data-prompt-field="keeper" data-prompt-id="3b" placeholder="keeper 0:04–0:09">
         <input class="notes" data-prompt-field="notes" data-prompt-id="3b" placeholder="заметки…">

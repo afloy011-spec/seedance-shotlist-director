@@ -22,9 +22,9 @@ A single HTML file (`shotlist.html`) saved to the current working directory (or 
 5. **Scene list** — numbered scenes, each with:
    - Scene number + short scene description (1 line, **in the user's language** — Russian user gets Russian descriptions; the prompts themselves are always English)
    - One or more **Prompts** (each exactly 15 seconds), shown as copy-ready code blocks with:
-     - a **risk badge** (🟢 safe / 🟡 tricky / 🔴 high-risk)
+     - a **risk badge** — a color-coded text badge (safe / tricky / high-risk), no emoji
      - a **final-cut target** ("15s gen → ~3s in final")
-     - a **status selector** (⬜ not started / 🔄 generating / ⚠️ retry / ✅ keeper)
+     - a **status selector** (not started / generating / retry / keeper — plain words in the user's language)
      - a **keeper timecode** field ("0:04–0:09") and a **notes** field
      - **editable text** — the prompt is click-to-edit in place; edits persist in localStorage, an "edited" badge appears, a Reset button restores the generated original, and Copy always grabs the CURRENT text
      - a **language mirror** (when the user's language isn't English) — a translation of the full prompt pre-generated at build time, behind a RU/EN toggle; reading aid only, Copy always copies the English prompt
@@ -134,13 +134,13 @@ Users don't use all 15 seconds — they cut keeper seconds into the final edit. 
 
 ### Risk badges
 
-Mark every prompt:
+Mark every prompt with a color-coded text badge (`.risk-low` green / `.risk-mid` amber / `.risk-high` red — colored text and border, **no emoji anywhere on the board**):
 
-- 🟢 **safe** — static/simple shots, one character, no fine choreography. 1–2 attempts.
-- 🟡 **tricky** — precise gestures, product interactions, two-person blocking. 2–5 attempts.
-- 🔴 **high-risk** — crowds, complex choreography, text in frame, water/particles, fast camera + fast subject. 5–10+ attempts.
+- **safe** — static/simple shots, one character, no fine choreography. 1–2 attempts.
+- **tricky** — precise gestures, product interactions, two-person blocking. 2–5 attempts.
+- **high-risk** — crowds, complex choreography, text in frame, water/particles, fast camera + fast subject. 5–10+ attempts.
 
-State WHY in one clause. Advise the user to generate 🔴 prompts first — if a high-risk shot won't land, cheaper to redesign the scene before the safe shots are already paid for.
+State WHY in one clause. Advise the user to generate high-risk prompts first — if a high-risk shot won't land, cheaper to redesign the scene before the safe shots are already paid for.
 
 ### Aspect ratios and deliverables
 
@@ -247,7 +247,7 @@ When the user gives you a script (or scene, or idea):
 4. **Decide prompt count per scene.** Each prompt is one 15-second beat. A 12-second moment still gets one full prompt — fill the 15 seconds with the breath, the look, the held silence after the line. A 40-second confession = 3 prompts (e.g., 5a, 5b, 5c). Honest assessment: how many 15-second beats does this moment actually need to land?
 5. **Write each prompt** following the strict structure: Style CORE + Lighting, Characters (@refs), Scene + geo-spatial, CUTs, ENDS ON, SFX. Assign risk badge and final-cut target.
 6. **Generate the HTML** using the template approach below — asset checklist, repair guide, runtime summary, Project Bible JSON included.
-7. **Save to `shotlist.html`** in the current working directory (or a user-specified path) and present it. Tell the user: build the checklist assets first, generate 🔴 prompts first.
+7. **Save to `shotlist.html`** in the current working directory (or a user-specified path) and present it. Tell the user: build the checklist assets first, generate high-risk prompts first.
 
 ---
 
@@ -272,7 +272,7 @@ Key requirements:
 - **Project slug**: derive a short slug from the project title (e.g. `headphones-ad`). Every localStorage key is prefixed with it: `sd-{slug}-...`. This prevents two shotlists from sharing state.
 - Each prompt is in a `<pre>` block with monospace font and a "Copy" button. The full prompt text (Style CORE + Lighting + Characters + Scene + CUTs + ENDS ON + SFX) is the entire content of the `<pre>` — that's what gets copied to Seedance. Escape `<`, `>`, `&` in prompt text as HTML entities.
 - **Per-prompt production controls** (all persisted to localStorage):
-  - status `<select>`: ⬜ not started / 🔄 generating / ⚠️ retry / ✅ keeper — key `sd-{slug}-p-{promptId}-status`
+  - status `<select>`: not started / generating / retry / keeper (plain words, user's language) — key `sd-{slug}-p-{promptId}-status`
   - keeper timecode `<input>` (placeholder "0:04–0:09") — key `sd-{slug}-p-{promptId}-keeper`
   - notes `<input>` (free text: "gen 3 best, face ok") — key `sd-{slug}-p-{promptId}-notes`
 - **Scene checkbox** (one per scene even when split into 3a/3b/3c) — key `sd-{slug}-scene-{n}-done`
@@ -349,6 +349,9 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
     font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; flex-wrap: wrap; }
   .prompt-actions { display: flex; gap: 8px; margin-left: auto; align-items: center; }
   .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); }
+  .badge.risk-high { color: var(--risk); border-color: var(--risk); }
+  .badge.risk-mid { color: var(--warn); border-color: var(--warn); }
+  .badge.risk-low { color: var(--done); border-color: var(--done); }
   .copy-btn { background: transparent; color: var(--accent); border: 1px solid var(--border);
     border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
     text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit; }
@@ -389,9 +392,9 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
   </div>
 
   <details class="top-block howto">
-    <summary>ℹ️ How to use · shortcuts</summary> <!-- in the user's language -->
+    <summary>How to use</summary> <!-- in the user's language -->
     <ul>
-      <li><b>Order:</b> build the checklist assets → generate 🔴 high-risk prompts first.</li>
+      <li><b>Order:</b> build the checklist assets → generate high-risk prompts first.</li>
       <li><b>Copy</b> — the full standalone prompt, always English.</li>
       <li><b>Click into a prompt</b> to edit. Local edits live only in this browser: to bake them into the file and refresh the translation — <b>Export edits</b> → paste into Claude.</li>
       <li><b>RU</b> — read-only translation of the prompt.</li>
@@ -406,15 +409,15 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
     </div>
   </details>
 
-  <details class="top-block" open><summary>📦 Asset Checklist — build these before generating</summary>
+  <details class="top-block" open><summary>Asset Checklist — build these before generating</summary>
     <div class="inner">{{ASSET_CHECKLIST_HTML}}</div>
   </details>
 
-  <details class="top-block"><summary>🎨 Global Style Prefix (core — every prompt carries it)</summary>
+  <details class="top-block"><summary>Style Prefix (core — every prompt carries it)</summary>
     <pre>{{STYLE_PREFIX_TEXT}}</pre>
   </details>
 
-  <details class="top-block"><summary>🔧 Repair Guide — a generation failed, what do I change?</summary>
+  <details class="top-block"><summary>Repair Guide — a generation failed, what do I change?</summary>
     {{REPAIR_GUIDE_HTML}}
   </details>
 
@@ -585,7 +588,7 @@ Each scene block in `{{SCENES_HTML}}` follows this pattern:
   <div class="prompt-block">
     <div class="prompt-label">
       <span>Prompt 3a · 15s → ~4s final</span>
-      <span class="badge">🟡 tricky — two-person blocking</span>
+      <span class="badge risk-mid">tricky — two-person blocking</span>
       <span class="prompt-actions">
         <span class="edited-badge" data-prompt-id="3a" hidden>edited</span>
         <button class="tool-btn reset-btn" data-prompt-id="3a" hidden title="Вернуть исходный сгенерированный текст">Reset</button>
@@ -594,12 +597,12 @@ Each scene block in `{{SCENES_HTML}}` follows this pattern:
       </span>
     </div>
     <pre class="prompt" lang="en" data-prompt-id="3a">[FULL PROMPT — Style CORE, Lighting, Characters (@refs), Scene, CUTs, ENDS ON, SFX]</pre>
-    <div class="mirror-stale" data-prompt-id="3a" hidden>⚠ Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
+    <div class="mirror-stale" data-prompt-id="3a" hidden>Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
     <pre class="prompt-mirror" hidden>[Полное зеркало промпта на языке пользователя — только для чтения; реплики остаются на английском с переводом в «…»]</pre>
     <div class="prod-row">
       <select data-prompt-field="status" data-prompt-id="3a">
-        <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
-        <option value="retry">⚠️ retry</option><option value="keeper">✅ keeper</option>
+        <option value="">не начат</option><option value="gen">генерится</option>
+        <option value="retry">ретрай</option><option value="keeper">кипер</option>
       </select>
       <input class="keeper" data-prompt-field="keeper" data-prompt-id="3a" placeholder="keeper 0:04–0:09">
       <input class="notes" data-prompt-field="notes" data-prompt-id="3a" placeholder="notes…">
@@ -616,7 +619,7 @@ The `data-scene` attribute uses the scene number as a string. If a scene is spli
 
 User script: *"Anna comes home soaking wet from the rain. Marco is sitting on the couch, looks up from his book, doesn't say anything. She walks past him to the bedroom."*
 
-This is a single scene — call it Scene 1. Assets: `@anna_wet` (soaked state — she's introduced wet, so the wet variant IS her base asset here), `@marco`, `@apartment`. Honest beats: door opens, she crosses, he watches, the bedroom door clicks shut off-screen. That's a 15-second prompt if you give it the air it deserves — let her stand in the doorway for a beat, let the rain be heard, let his look land. One prompt is enough. Risk: 🟢 safe — two characters, slow blocking, no fine choreography. Final cut: ~8s of these 15 will survive — this moment IS the film.
+This is a single scene — call it Scene 1. Assets: `@anna_wet` (soaked state — she's introduced wet, so the wet variant IS her base asset here), `@marco`, `@apartment`. Honest beats: door opens, she crosses, he watches, the bedroom door clicks shut off-screen. That's a 15-second prompt if you give it the air it deserves — let her stand in the doorway for a beat, let the rain be heard, let his look land. One prompt is enough. Risk: safe — two characters, slow blocking, no fine choreography. Final cut: ~8s of these 15 will survive — this moment IS the film.
 
 ```
 Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
@@ -656,7 +659,7 @@ What you do — and don't do:
 2. Scene 1 becomes prompts `1a` + `1b`. **The scene number does not change**, the checkbox does not change, `data-scene="1"` stays — her saved progress is untouched.
 3. `1a` = the doorway alone, given full air: the door, the silhouette, the drip, his head-tilt — 15 seconds of standing still that now has room to work. It gets a **new ENDS ON**: "Anna mid-first-step from the door, eyes still down; Marco's eyes just lifting."
 4. `1b` opens from exactly that frame and carries the cross + his close-up. Its ENDS ON is the OLD 1a's ENDS ON — the handoff to scene 2 is preserved, so scene 2 needs no regeneration.
-5. Statuses: `1a` keeps the old prompt's saved status only if the user says the doorway keeper survives; otherwise both start ⬜. Say which in chat, one line.
+5. Statuses: `1a` keeps the old prompt's saved status only if the user says the doorway keeper survives; otherwise both start "not started". Say which in chat, one line.
 6. Re-render the same file, same slug, and present it. Total diff: one scene touched, zero renumbering, zero collateral regeneration.
 
 The instinct to resist: rewriting neighboring scenes "while you're at it". A revision touches what the user asked and the minimum around it — regeneration costs the user money.
