@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AquaPulse — Director's Shotlist</title>
+<style>
+  :root {
+    --bg: #0e0e10; --panel: #17171a; --panel-2: #1d1d21;
+    --border: #2a2a30; --text: #e8e8ea; --text-dim: #9a9aa2;
+    --accent: #d4a259; --done: #4ade80; --warn: #f59e0b; --risk: #ef4444;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.5; padding: 32px 24px 80px; }
+  .container { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 8px; }
+  .runtime { color: var(--accent); font-size: 13px; margin-bottom: 24px; }
+  .howto { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 18px; font-size: 13px; color: var(--text-dim); margin-bottom: 24px; }
+  details.top-block { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; }
+  details.top-block summary { cursor: pointer; font-weight: 600; color: var(--accent); user-select: none; }
+  details.top-block pre, details.top-block .inner { margin: 14px 0 0; padding: 14px;
+    background: var(--panel-2); border-radius: 6px;
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px;
+    white-space: pre-wrap; color: var(--text); }
+  details.top-block table { border-collapse: collapse; margin-top: 14px; font-size: 13px; width: 100%; }
+  details.top-block td, details.top-block th { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+  .scene { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px 22px; margin-bottom: 18px; }
+  .scene-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .scene-header input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px;
+    accent-color: var(--done); cursor: pointer; flex-shrink: 0; }
+  .scene-num { font-size: 18px; font-weight: 700; color: var(--accent); min-width: 56px; }
+  .scene-desc { font-size: 15px; color: var(--text); flex: 1; }
+  .scene.done .scene-desc { text-decoration: line-through; color: var(--text-dim); }
+  .prompt-block { background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 6px; margin-top: 12px; overflow: hidden; }
+  .prompt-label { display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    padding: 8px 14px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; flex-wrap: wrap; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); }
+  .copy-btn { background: transparent; color: var(--accent); border: 1px solid var(--border);
+    border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit; }
+  .copy-btn:hover { border-color: var(--accent); }
+  .copy-btn.copied { color: var(--done); border-color: var(--done); }
+  .copy-btn.failed { color: var(--risk); border-color: var(--risk); }
+  pre.prompt { margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px; white-space: pre-wrap; color: var(--text); }
+  .prod-row { display: flex; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--border);
+    align-items: center; flex-wrap: wrap; }
+  .prod-row select, .prod-row input { background: var(--panel); color: var(--text);
+    border: 1px solid var(--border); border-radius: 4px; padding: 5px 8px; font-size: 12.5px; font-family: inherit; }
+  .prod-row input.keeper { width: 130px; } .prod-row input.notes { flex: 1; min-width: 160px; }
+</style>
+</head>
+<body>
+<div class="container" data-slug="aquapulse">
+  <h1>AquaPulse</h1>
+  <div class="subtitle">Director's Shotlist · Seedance 2.0</div>
+  <div class="runtime">Целевой ролик: ~25s · 4 промпта · 60s генерации · киперы: 8+6+6+5s</div>
+
+  <div class="howto">
+    Сначала собери все ассеты из чеклиста, генерируй 🔴-промпты первыми.
+    Copy забирает полный автономный промпт. Отмечай статус / таймкод кипера / заметки — всё сохраняется само.
+    Генерация не удалась? Открой Repair Guide. Нужны правки? Просто отдай этот файл Claude.
+  </div>
+
+  <details class="top-block" open><summary>📦 Asset Checklist — собери ДО генерации</summary>
+    <div class="inner">@maya — героиня (сухая, свежая): локнутый фейс-клоузап + фулбоди в бирюзовом синглете (Soul Cinema)
+@maya_wet — она же на финише: пот, румянец, растрёпанная коса, потемневший синглет, номер 2117 — отдельный вариант, собрать один раз
+@lena — сестра: серый оверсайз-свитер, пучок, кружка чая
+@bottle — продукт: матово-белая смарт-бутылка, LED-кольцо аква у основания — мультиракурсный продакт-шит (GPT Image)
+@kitchen — кухня: ¾-ракурс с окном над мойкой, глубина для движения камеры
+@finish — финишная прямая: арка + барьеры с толпой, ¾-ракурс
+Layout map (сцены 1 и 3): линия финиша → 3 шага → стойка-кулер справа; барьеры с толпой по обе стороны</div>
+  </details>
+
+  <details class="top-block"><summary>🎨 Global Style Prefix (core — в каждом промпте)</summary>
+    <pre>Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+Color: 60:30:10 — dominant / secondary / accent.
+Camera: Physical cine lens. 180° shutter motion blur.
+Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
+Acting: Hollywood — micro-pauses before reactions, precise eye-line, living eyes with catch-lights, chest rise from breathing. Characters never standing, always reacting.
+Physics: Gravity and inertia respected — mass has real weight, correct contact shadows. No floating props.
+Composition: Rule of thirds + golden ratio. Every person moving from frame one.
+Continuity: Characters, props, environment identical across every cut. No identity drift.
+Technical: 24fps smooth motion. 8K detail. No jitter.
+Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
+
++ Lighting: своя строка в каждой сцене (см. промпты)</pre>
+  </details>
+
+  <details class="top-block"><summary>🔧 Repair Guide — генерация не удалась, что менять?</summary>
+    <table>
+      <tr><th>Симптом</th><th>Правка в промпте</th></tr>
+      <tr><td>Лицо/идентичность плывёт между катами</td><td>Усилить Character anchor (конкретнее черты), проверить @-референс, уменьшить число катов в этом промпте</td></tr>
+      <tr><td>Бутылка левитирует / телепортируется</td><td>Явная точка контакта («bottle IN her fist», «bottle ON the cooler stand»), упоминать её в каждом кате, где видна</td></tr>
+      <tr><td>Хореография превращается в кашу</td><td>Разбить движение по битам, одно действие на бит; один непрерывный кат вместо трёх</td></tr>
+      <tr><td>Пластиковая «AI-slop» кожа</td><td>Проверить, что Style CORE скопирован целиком (особенно строка Skin); добавить свет-на-коже в этой сцене</td></tr>
+      <tr><td>Мёртвая актёрка</td><td>Микро-биты: вдох, перевод взгляда, сглатывание перед репликой; что делает лицо ДО действия</td></tr>
+      <tr><td>Перепутана география / персонажи меняются местами</td><td>Заменить прозу layout map'ом; зафиксировать экранное направление («Lena frame-left, Maya frame-right — и так остаются»)</td></tr>
+      <tr><td>Клип не клеится со следующим</td><td>Сверить ENDS ON ↔ первый кадр следующего промпта; перегенерировать ПОЗДНИЙ клип, не кипер</td></tr>
+      <tr><td>Движение слишком быстрое / скомканное</td><td>Промпт перегружен — вынести кат в новый промпт (3b), дать остальным битам дышать</td></tr>
+    </table>
+    <div class="inner">Правило: меняй ОДНУ вещь за ретрай. Если ретрай меняет три переменные — успех ничему не учит.</div>
+  </details>
+
+  <div class="scene">
+    <div class="scene-header">
+      <input type="checkbox" data-scene="1">
+      <div class="scene-num">1.</div>
+      <div class="scene-desc">Финиш марафона — измотанная Майя пересекает черту и хватает бутылку; LED-кольцо просыпается. <em>Match-cut out: большой палец на LED-кольце → тот же жест на кухне.</em></div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">
+        <span>Prompt 1a · 15s → ~8s final</span>
+        <span class="badge">🔴 high-risk — толпа у барьеров + взаимодействие с продуктом</span>
+        <button class="copy-btn">Copy</button>
+      </div>
+      <pre class="prompt">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+Color: 60:30:10 — dominant / secondary / accent.
+Camera: Physical cine lens. 180° shutter motion blur.
+Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
+Acting: Hollywood — micro-pauses before reactions, precise eye-line, living eyes with catch-lights, chest rise from breathing. Characters never standing, always reacting.
+Physics: Gravity and inertia respected — mass has real weight, correct contact shadows. No floating props.
+Composition: Rule of thirds + golden ratio. Every person moving from frame one.
+Continuity: Characters, props, environment identical across every cut. No identity drift.
+Technical: 24fps smooth motion. 8K detail. No jitter.
+Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
+Lighting: Natural light only — bright late-morning sun, high and slightly frontal, crisp shadows on the asphalt, light atmospheric haze down the finish straight. No contre-jour on her face.
+
+Characters:
+MAYA (@maya_wet) — athletic woman, early 30s, dark hair in a loosened braid, skin sheened and dripping with sweat, cheeks flushed deep red, teal running singlet darkened at the chest and back, race bib number 2117 crumpled at one corner.
+The matte-white smart bottle (@bottle — thin aqua LED ring at the base) waits in a branded cooler stand.
+
+Scene:
+A city marathon finish straight (@finish), late morning. Per the layout map: finish arch behind her, crowd leaning over barriers on BOTH sides and staying behind them, the cooler stand with @bottle three steps past the line on the RIGHT. Maya crosses the line at a broken, exhausted stride.
+
+CUT 1 — Wide tracking from ahead of her, 35mm, dolly back matching her stride:
+Maya (@maya_wet) staggers across the finish line, arms dropping, stride breaking from run to walk. Her chest heaves; she squints against the light. The crowd claps and leans over the barriers — nobody crosses them. Her eyes find the cooler stand right of frame — a beat of pure want.
+
+CUT 2 — Medium on the stand, 50mm, static:
+Her hand closes around the white bottle (@bottle) — fingers pressing into the matte surface, condensation smearing, the bottle staying rooted in her grip. As her palm seals, the LED ring wakes: one soft aqua pulse. Micro-pause — her thumb strokes the ring once, disbelief flickering into a tired half-smile.
+
+CUT 3 — Close-up profile, 85mm, slow push-in:
+She tips the bottle back and drinks — throat working in long swallows, one bead of water cutting a clean line through the sweat on her chin. Eyes close. Shoulders finally drop. She lowers the bottle, exhales through rounded lips — and her thumb finds the LED ring again, resting on it.
+
+ENDS ON: close on her hand around the bottle, thumb resting on the glowing aqua ring, her exhausted half-smile soft in the background. (Scene 2 match-cuts from this exact thumb-on-ring gesture.)
+
+SFX: ragged breathing and slowing footfalls → crowd applause and barrier-board drumming at mid-distance → the seal-pop of the cap, long swallows, one deep exhale.</pre>
+      <div class="prod-row">
+        <select data-prompt-field="status" data-prompt-id="1a">
+          <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
+          <option value="retry">⚠️ retry</option><option value="keeper">✅ keeper</option>
+        </select>
+        <input class="keeper" data-prompt-field="keeper" data-prompt-id="1a" placeholder="keeper 0:04–0:09">
+        <input class="notes" data-prompt-field="notes" data-prompt-id="1a" placeholder="заметки…">
+      </div>
+    </div>
+  </div>
+
+  <div class="scene">
+    <div class="scene-header">
+      <input type="checkbox" data-scene="2">
+      <div class="scene-num">2.</div>
+      <div class="scene-desc">Флешбек — утро того же дня: сухая и собранная Майя наполняет бутылку на кухне и говорит сестре: «Сегодня добегу». <em>Match-cut in: большой палец на LED-кольце. Match-cut out: бутылка уходит в пояс → взлетает в руке на финише.</em></div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">
+        <span>Prompt 2a · 15s → ~6s final</span>
+        <span class="badge">🟡 tricky — диалог + двухперсонажный блокинг</span>
+        <button class="copy-btn">Copy</button>
+      </div>
+      <pre class="prompt">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+Color: 60:30:10 — dominant / secondary / accent.
+Camera: Physical cine lens. 180° shutter motion blur.
+Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
+Acting: Hollywood — micro-pauses before reactions, precise eye-line, living eyes with catch-lights, chest rise from breathing. Characters never standing, always reacting.
+Physics: Gravity and inertia respected — mass has real weight, correct contact shadows. No floating props.
+Composition: Rule of thirds + golden ratio. Every person moving from frame one.
+Continuity: Characters, props, environment identical across every cut. No identity drift.
+Technical: 24fps smooth motion. 8K detail. No jitter.
+Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
+Lighting: Natural light only — soft early-morning window light over the sink, even and warm, gentle steam haze. No contre-jour, no rim backlight. No artificial lighting.
+
+Characters:
+MAYA (@maya) — the same woman, early 30s, dark hair in a fresh tight braid, skin dry and rested, the same teal running singlet — clean and bright, bib not yet pinned.
+LENA (@lena) — her younger sister, mid 20s, oversized grey sweater, sleep-mussed bun, mug of tea cupped in both hands.
+The matte-white smart bottle (@bottle) stands open beside the kitchen tap.
+
+Scene:
+A small sunlit kitchen (@kitchen), early morning of race day. Window over the sink. Maya at the tap filling @bottle, frame-right; Lena leaning on the counter frame-left, three feet away, watching over the rim of her mug. They hold these sides for the whole scene.
+
+CUT 1 — Match-cut in: close on Maya's thumb settling onto the LED ring of the capped bottle — dry hand now, clean singlet — 50mm, slight overhead tilt:
+The ring blinks awake: one calm aqua pulse. Her thumb rests on it a beat longer than it needs to. Water drums into the sink behind. Pull focus up to her face — jaw set, eyes already out on the course.
+
+CUT 2 — Medium two-shot from across the counter, 35mm, static:
+Steam curls off Lena's tea against the window light. Lena (@lena) watches Maya over the mug, a small knowing smile forming. Maya slides the bottle (@bottle) into her belt without looking down — the movement automatic, rehearsed a hundred mornings.
+
+CUT 3 — Singles, 85mm, over-the-shoulder pair:
+Maya looks up at Lena. A breath first — then, quiet and level, no bravado, just fact: "Today I finish it." Lena holds her gaze, lowers the mug, nods once — slow, certain. The smallest smile tugs at Maya's mouth.
+
+ENDS ON: medium on Maya, bottle secured at her hip, chin lifting toward the door, the smile still forming. (Scene 3 match-cuts to the bottle rising in her fist at the finish.)
+
+SFX: tap water drumming into the bottle then shutting off → the soft click of the cap, kitchen-quiet, a distant street below → her line, close and level; the ceramic tap of Lena's mug set on the counter.</pre>
+      <div class="prod-row">
+        <select data-prompt-field="status" data-prompt-id="2a">
+          <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
+          <option value="retry">⚠️ retry</option><option value="keeper">✅ keeper</option>
+        </select>
+        <input class="keeper" data-prompt-field="keeper" data-prompt-id="2a" placeholder="keeper 0:04–0:09">
+        <input class="notes" data-prompt-field="notes" data-prompt-id="2a" placeholder="заметки…">
+      </div>
+    </div>
+  </div>
+
+  <div class="scene">
+    <div class="scene-header">
+      <input type="checkbox" data-scene="3">
+      <div class="scene-num">3.</div>
+      <div class="scene-desc">Снова финиш — Майя вскидывает бутылку, толпа ревёт; затем пэкшот. <em>Match-cut in: бутылка взлетает в руке.</em></div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">
+        <span>Prompt 3a · 15s → ~6s final</span>
+        <span class="badge">🔴 high-risk — толпа в кадре с двух сторон, брызги воды</span>
+        <button class="copy-btn">Copy</button>
+      </div>
+      <pre class="prompt">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+Color: 60:30:10 — dominant / secondary / accent.
+Camera: Physical cine lens. 180° shutter motion blur.
+Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
+Acting: Hollywood — micro-pauses before reactions, precise eye-line, living eyes with catch-lights, chest rise from breathing. Characters never standing, always reacting.
+Physics: Gravity and inertia respected — mass has real weight, correct contact shadows. No floating props.
+Composition: Rule of thirds + golden ratio. Every person moving from frame one.
+Continuity: Characters, props, environment identical across every cut. No identity drift.
+Technical: 24fps smooth motion. 8K detail. No jitter.
+Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
+Lighting: Natural light only — the same bright late-morning sun as scene 1, high and slightly frontal, crisp shadows, light haze down the straight. No contre-jour on her face.
+
+Characters:
+MAYA (@maya_wet) — sweat-soaked, braid loosened, teal singlet darkened, bib 2117, the matte-white bottle (@bottle) in her right fist, aqua LED ring pulsing.
+
+Scene:
+The marathon finish straight (@finish), seconds after scene 1. Per the layout map: Maya just past the line, centered; crowd at the barriers on BOTH sides, staying behind them; finish arch behind her.
+
+CUT 1 — Match-cut in: low-angle medium, 35mm, slow rise — the bottle (@bottle) sweeps up through frame in her fist, completing the gesture that began in the kitchen:
+She plants her feet and lifts the bottle high overhead. The crowd noise swells — cheers, a whistle, hands drumming the barrier boards. A thin arc of water flicks off the cap, catching the sun. Her exhausted face breaks into a full, open laugh.
+
+CUT 2 — Reverse wide from behind her, 24mm, static:
+Her silhouette against the haze and the finish arch, bottle held to the sky, crowd leaning in from both edges of frame but never crossing the barriers — one held, triumphant beat. She lets the arm fall, shakes her head once, still laughing at herself.
+
+ENDS ON: wide from behind — Maya small against the arch, arm down, bottle at her side catching a glint of aqua LED. (The packshot opens on that glint.)
+
+SFX: crowd roar swelling from the first frame, barrier boards drumming → the wet flick of water off the cap → her single breathless laugh above the noise.</pre>
+      <div class="prod-row">
+        <select data-prompt-field="status" data-prompt-id="3a">
+          <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
+          <option value="retry">⚠️ retry</option><option value="keeper">✅ keeper</option>
+        </select>
+        <input class="keeper" data-prompt-field="keeper" data-prompt-id="3a" placeholder="keeper 0:04–0:09">
+        <input class="notes" data-prompt-field="notes" data-prompt-id="3a" placeholder="заметки…">
+      </div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">
+        <span>Prompt 3b · 15s → ~5s final</span>
+        <span class="badge">🟢 safe — продукт, статика, без людей</span>
+        <button class="copy-btn">Copy</button>
+      </div>
+      <pre class="prompt">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
+Color: 60:30:10 — dominant / secondary / accent.
+Camera: Physical cine lens. 180° shutter motion blur.
+Skin: Pore-level realism — vellus hair, asymmetric moles, capillary flush, pore-shadow matching on-set light.
+Acting: Hollywood — micro-pauses before reactions, precise eye-line, living eyes with catch-lights, chest rise from breathing. Characters never standing, always reacting.
+Physics: Gravity and inertia respected — mass has real weight, correct contact shadows. No floating props.
+Composition: Rule of thirds + golden ratio. Every person moving from frame one.
+Continuity: Characters, props, environment identical across every cut. No identity drift.
+Technical: 24fps smooth motion. 8K detail. No jitter.
+Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
+Lighting: Natural light only — soft top-light through haze, gentle gradient background, a cool aqua kick from the LED ring itself as the only accent. No hard shadows.
+
+Characters:
+(no people — product only)
+The matte-white smart water bottle (@bottle), thin aqua LED ring glowing at the base, fine condensation beading on the matte shell.
+
+Scene:
+Packshot. @bottle stands on a smoked-glass plinth against soft haze, a shallow pool of reflection under it — the bottle planted, dead still, full weight on the glass.
+
+CUT 1 — Slow orbital, 50mm macro feel, 270 degrees around the bottle, one continuous move:
+It opens on a glint of aqua LED — the same glint that closed scene 3. Condensation beads slide slowly down the matte shell, each drop obeying gravity into the reflection pool. The LED ring breathes — dim, bright, dim — its glow catching the droplets. The orbit ends face-on to the etched logo as the ring settles to a steady glow and holds.
+
+ENDS ON: static face-on framing of the bottle, logo centered, LED ring in steady glow — the final frame of the ad.
+
+SFX: near-silence — a faint air-tone, the almost-subliminal tick of a condensation drop meeting glass.</pre>
+      <div class="prod-row">
+        <select data-prompt-field="status" data-prompt-id="3b">
+          <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
+          <option value="retry">⚠️ retry</option><option value="keeper">✅ keeper</option>
+        </select>
+        <input class="keeper" data-prompt-field="keeper" data-prompt-id="3b" placeholder="keeper 0:04–0:09">
+        <input class="notes" data-prompt-field="notes" data-prompt-id="3b" placeholder="заметки…">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="project-bible">
+{
+  "project": "AquaPulse",
+  "slug": "aquapulse",
+  "targetRuntime": "~25s final cut",
+  "generation": {"prompts": 4, "totalSeconds": 60, "keeperEstimate": "8+6+6+5s"},
+  "styleCore": "8K IMAX photorealistic; 60:30:10 color; physical cine lens, 180° shutter; pore-level skin; Hollywood acting; real physics; rule of thirds; continuity locked; 24fps; diegetic dialogue and environmental SFX only, no music, no subtitles",
+  "lightingByScene": {
+    "1": "bright late-morning sun, high slightly frontal, crisp shadows, light haze, no contre-jour",
+    "2": "soft early-morning window light over the sink, even and warm, steam haze, no rim backlight",
+    "3": "same sun as scene 1 (continuity)",
+    "3b-packshot": "soft top-light through haze, aqua LED kick as only accent"
+  },
+  "characters": {
+    "@maya": "athletic woman, early 30s, dark tight braid, teal running singlet (clean), dry and rested — morning state",
+    "@maya_wet": "same woman post-race: sweat-sheened, deep flush, loosened braid, darkened singlet, crumpled bib 2117",
+    "@lena": "younger sister, mid 20s, oversized grey sweater, sleep-mussed bun, mug of tea"
+  },
+  "assets": {
+    "@bottle": "matte-white smart bottle, thin aqua LED ring at base — multi-angle product sheet",
+    "@kitchen": "small sunlit kitchen, window over sink, 3/4 reference",
+    "@finish": "marathon finish straight: arch + barriers with crowd, 3/4 reference",
+    "layoutMap": "finish line -> 3 steps -> cooler stand RIGHT; barriers with crowd both sides"
+  },
+  "scenes": [
+    {"n": 1, "desc": "Finish: exhausted Maya grabs the bottle, LED wakes", "prompts": ["1a"], "risk": {"1a": "high — crowd + product interaction"}, "finalCut": {"1a": "~8s"}, "endsOn": {"1a": "close on hand, thumb on glowing ring"}, "matchCutOut": "thumb-on-ring -> kitchen"},
+    {"n": 2, "desc": "Flashback morning kitchen: dry Maya fills bottle, line to sister", "prompts": ["2a"], "risk": {"2a": "tricky — dialogue + two-person blocking"}, "finalCut": {"2a": "~6s"}, "endsOn": {"2a": "bottle at hip, chin lifting to door"}, "dialogue": {"maya": "Today I finish it."}, "matchCutOut": "bottle to belt -> bottle rising at finish"},
+    {"n": 3, "desc": "Finish celebration + packshot", "prompts": ["3a", "3b"], "risk": {"3a": "high — crowd both sides, water spray", "3b": "safe — product only"}, "finalCut": {"3a": "~6s", "3b": "~5s"}, "endsOn": {"3a": "wide from behind, LED glint at her side", "3b": "static logo framing, steady glow — final frame"}}
+  ],
+  "continuityNotes": "Reverse chronology: scenes 1 and 3 are @maya_wet, scene 2 (flashback) is @maya dry with clean singlet and unpinned bib. Same singlet garment across all scenes. Crowd never crosses barriers. LED ring: pulse on grip, steady in packshot."
+}
+</script>
+
+<script>
+  const SLUG = document.querySelector('.container').dataset.slug;
+  const K = s => 'sd-' + SLUG + '-' + s;
+
+  // Scene checkboxes
+  document.querySelectorAll('.scene input[type="checkbox"]').forEach(cb => {
+    const key = K('scene-' + cb.dataset.scene + '-done');
+    if (localStorage.getItem(key) === '1') { cb.checked = true; cb.closest('.scene').classList.add('done'); }
+    cb.addEventListener('change', () => {
+      localStorage.setItem(key, cb.checked ? '1' : '0');
+      cb.closest('.scene').classList.toggle('done', cb.checked);
+    });
+  });
+
+  // Per-prompt production state (status select, keeper, notes)
+  document.querySelectorAll('[data-prompt-field]').forEach(el => {
+    const key = K('p-' + el.dataset.promptId + '-' + el.dataset.promptField);
+    const saved = localStorage.getItem(key);
+    if (saved !== null) el.value = saved;
+    el.addEventListener('change', () => localStorage.setItem(key, el.value));
+    if (el.tagName === 'INPUT') el.addEventListener('input', () => localStorage.setItem(key, el.value));
+  });
+
+  // Copy buttons with fallback
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const text = btn.closest('.prompt-block').querySelector('pre.prompt').textContent;
+      const ok = () => { btn.classList.add('copied'); const o = btn.textContent; btn.textContent = 'Copied';
+        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = o; }, 1500); };
+      const fail = () => { btn.classList.add('failed'); const o = btn.textContent; btn.textContent = 'Select & Ctrl+C';
+        setTimeout(() => { btn.classList.remove('failed'); btn.textContent = o; }, 2500); };
+      const legacy = () => {
+        try { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+          ta.select(); document.execCommand('copy'); document.body.removeChild(ta); ok(); } catch(e) { fail(); }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok).catch(legacy);
+      } else { legacy(); }
+    });
+  });
+</script>
+</body>
+</html>
