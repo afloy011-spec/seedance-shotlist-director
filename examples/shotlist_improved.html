@@ -70,13 +70,13 @@
   </div>
 
   <details class="top-block" open><summary>📦 Asset Checklist — собери ДО генерации</summary>
-    <div class="inner">@maya — героиня (сухая, свежая): локнутый фейс-клоузап + фулбоди в бирюзовом синглете (Soul Cinema)
-@maya_wet — она же на финише: пот, румянец, растрёпанная коса, потемневший синглет, номер 2117 — отдельный вариант, собрать один раз
-@lena — сестра: серый оверсайз-свитер, пучок, кружка чая
+    <div class="inner">@mark — герой (сухой, свежий): локнутый фейс-клоузап + фулбоди в оранжевом синглете (Soul Cinema)
+@mark_wet — он же на финише: пот, глубокий румянец, потемневший синглет, скомканный номер 2117 — отдельный вариант, собрать один раз
+@lena — тренер, старшая сестра: синяя ветровка с гербом клуба, секундомер на шнурке, планшет, очки в седеющих волосах
 @bottle — продукт: матово-белая смарт-бутылка, LED-кольцо аква у основания — мультиракурсный продакт-шит (GPT Image)
-@kitchen — кухня: ¾-ракурс с окном над мойкой, глубина для движения камеры
+@club — офис бегового клуба: стол, корборд с картами маршрутов, окно, кулер — ¾-ракурс с глубиной
 @finish — финишная прямая: арка + барьеры с толпой, ¾-ракурс
-Layout map (сцены 1 и 3): линия финиша → 3 шага → стойка-кулер справа; барьеры с толпой по обе стороны</div>
+Layout map (сцены 1 и 3): линия финиша → 3 шага → стойка-кулер справа; барьеры с толпой по обе стороны; служебный проём в барьере слева</div>
   </details>
 
   <details class="top-block"><summary>🎨 Global Style Prefix (core — в каждом промпте)</summary>
@@ -98,11 +98,11 @@ Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
     <table>
       <tr><th>Симптом</th><th>Правка в промпте</th></tr>
       <tr><td>Лицо/идентичность плывёт между катами</td><td>Усилить Character anchor (конкретнее черты), проверить @-референс, уменьшить число катов в этом промпте</td></tr>
-      <tr><td>Бутылка левитирует / телепортируется</td><td>Явная точка контакта («bottle IN her fist», «bottle ON the cooler stand»), упоминать её в каждом кате, где видна</td></tr>
+      <tr><td>Бутылка левитирует / телепортируется</td><td>Явная точка контакта («bottle IN his fist», «bottle ON the cooler stand»), упоминать её в каждом кате, где видна</td></tr>
       <tr><td>Хореография превращается в кашу</td><td>Разбить движение по битам, одно действие на бит; один непрерывный кат вместо трёх</td></tr>
       <tr><td>Пластиковая «AI-slop» кожа</td><td>Проверить, что Style CORE скопирован целиком (особенно строка Skin); добавить свет-на-коже в этой сцене</td></tr>
       <tr><td>Мёртвая актёрка</td><td>Микро-биты: вдох, перевод взгляда, сглатывание перед репликой; что делает лицо ДО действия</td></tr>
-      <tr><td>Перепутана география / персонажи меняются местами</td><td>Заменить прозу layout map'ом; зафиксировать экранное направление («Lena frame-left, Maya frame-right — и так остаются»)</td></tr>
+      <tr><td>Перепутана география / персонажи меняются местами</td><td>Заменить прозу layout map'ом; зафиксировать экранное направление («Lena frame-left, Mark frame-right — и так остаются»)</td></tr>
       <tr><td>Клип не клеится со следующим</td><td>Сверить ENDS ON ↔ первый кадр следующего промпта; перегенерировать ПОЗДНИЙ клип, не кипер</td></tr>
       <tr><td>Движение слишком быстрое / скомканное</td><td>Промпт перегружен — вынести кат в новый промпт (3b), дать остальным битам дышать</td></tr>
     </table>
@@ -113,7 +113,7 @@ Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
     <div class="scene-header">
       <input type="checkbox" data-scene="1">
       <div class="scene-num">1.</div>
-      <div class="scene-desc">Финиш марафона — измотанная Майя пересекает черту и хватает бутылку; LED-кольцо просыпается. <em>Match-cut out: большой палец на LED-кольце → тот же жест на кухне.</em></div>
+      <div class="scene-desc">Финиш марафона — измотанный Марк пересекает черту и хватает бутылку; LED-кольцо просыпается. <em>Match-cut out: большой палец на LED-кольце → тот же жест в клубе.</em></div>
     </div>
 
     <div class="prompt-block">
@@ -132,25 +132,25 @@ Composition: Rule of thirds + golden ratio. Every person moving from frame one.
 Continuity: Characters, props, environment identical across every cut. No identity drift.
 Technical: 24fps smooth motion. 8K detail. No jitter.
 Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
-Lighting: Natural light only — bright late-morning sun, high and slightly frontal, crisp shadows on the asphalt, light atmospheric haze down the finish straight. No contre-jour on her face.
+Lighting: Natural light only — bright late-morning sun, high and slightly frontal, crisp shadows on the asphalt, light atmospheric haze down the finish straight. No contre-jour on his face.
 
 Characters:
-MAYA (@maya_wet) — athletic woman, early 30s, dark hair in a loosened braid, skin sheened and dripping with sweat, cheeks flushed deep red, teal running singlet darkened at the chest and back, race bib number 2117 crumpled at one corner.
+MARK (@mark_wet) — lean runner, mid 30s, short dark hair, salt-and-pepper stubble, skin sheened and dripping with sweat, cheeks flushed deep red, orange singlet darkened at the chest and back, race bib number 2117 crumpled at one corner.
 The matte-white smart bottle (@bottle — thin aqua LED ring at the base) waits in a branded cooler stand.
 
 Scene:
-A city marathon finish straight (@finish), late morning. Per the layout map: finish arch behind her, crowd leaning over barriers on BOTH sides and staying behind them, the cooler stand with @bottle three steps past the line on the RIGHT. Maya crosses the line at a broken, exhausted stride.
+A city marathon finish straight (@finish), late morning. Per the layout map: finish arch behind him, crowd leaning over barriers on BOTH sides and staying behind them, the cooler stand with @bottle three steps past the line on the RIGHT. Mark crosses the line at a broken, exhausted stride.
 
-CUT 1 — Wide tracking from ahead of her, 35mm, dolly back matching her stride:
-Maya (@maya_wet) staggers across the finish line, arms dropping, stride breaking from run to walk. Her chest heaves; she squints against the light. The crowd claps and leans over the barriers — nobody crosses them. Her eyes find the cooler stand right of frame — a beat of pure want.
+CUT 1 — Wide tracking from ahead of him, 35mm, dolly back matching his stride:
+Mark (@mark_wet) staggers across the finish line, arms dropping, stride breaking from run to walk. His chest heaves; he squints against the light. The crowd claps and leans over the barriers — nobody crosses them. His eyes find the cooler stand right of frame — a beat of pure want.
 
 CUT 2 — Medium on the stand, 50mm, static:
-Her hand closes around the white bottle (@bottle) — fingers pressing into the matte surface, condensation smearing, the bottle staying rooted in her grip. As her palm seals, the LED ring wakes: one soft aqua pulse. Micro-pause — her thumb strokes the ring once, disbelief flickering into a tired half-smile.
+His hand closes around the white bottle (@bottle) — fingers pressing into the matte surface, condensation smearing, the bottle staying rooted in his grip. As his palm seals, the LED ring wakes: one soft aqua pulse. Micro-pause — his thumb strokes the ring once, disbelief flickering into a tired half-smile.
 
 CUT 3 — Close-up profile, 85mm, slow push-in:
-She tips the bottle back and drinks — throat working in long swallows, one bead of water cutting a clean line through the sweat on her chin. Eyes close. Shoulders finally drop. She lowers the bottle, exhales through rounded lips — and her thumb finds the LED ring again, resting on it.
+He tips the bottle back and drinks — throat working in long swallows, one bead of water cutting a clean line through the sweat on his chin. Eyes close. Shoulders finally drop. He lowers the bottle, exhales through rounded lips — and his thumb finds the LED ring again, resting on it.
 
-ENDS ON: close on her hand around the bottle, thumb resting on the glowing aqua ring, her exhausted half-smile soft in the background. (Scene 2 match-cuts from this exact thumb-on-ring gesture.)
+ENDS ON: close on his hand around the bottle, thumb resting on the glowing aqua ring, his exhausted half-smile soft in the background. (Scene 2 match-cuts from this exact thumb-on-ring gesture.)
 
 SFX: ragged breathing and slowing footfalls → crowd applause and barrier-board drumming at mid-distance → the seal-pop of the cap, long swallows, one deep exhale.</pre>
       <div class="prod-row">
@@ -168,13 +168,13 @@ SFX: ragged breathing and slowing footfalls → crowd applause and barrier-board
     <div class="scene-header">
       <input type="checkbox" data-scene="2">
       <div class="scene-num">2.</div>
-      <div class="scene-desc">Флешбек — утро того же дня: сухая и собранная Майя наполняет бутылку на кухне и говорит сестре: «Сегодня добегу». <em>Match-cut in: большой палец на LED-кольце. Match-cut out: бутылка уходит в пояс → взлетает в руке на финише.</em></div>
+      <div class="scene-desc">Флешбек — штаб бегового клуба перед рассветом: тренер Лена разбирает план темпа, Марк наполняет бутылку. <em>Match-cut in: большой палец на LED-кольце. Match-cut out: бутылка уходит в пояс → взлетает между ними на финише.</em></div>
     </div>
 
     <div class="prompt-block">
       <div class="prompt-label">
         <span>Prompt 2a · 15s → ~6s final</span>
-        <span class="badge">🟡 tricky — диалог + двухперсонажный блокинг</span>
+        <span class="badge">🟡 tricky — два диалоговых бита + двухперсонажный блокинг</span>
         <button class="copy-btn">Copy</button>
       </div>
       <pre class="prompt">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
@@ -187,28 +187,28 @@ Composition: Rule of thirds + golden ratio. Every person moving from frame one.
 Continuity: Characters, props, environment identical across every cut. No identity drift.
 Technical: 24fps smooth motion. 8K detail. No jitter.
 Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
-Lighting: Natural light only — soft early-morning window light over the sink, even and warm, gentle steam haze. No contre-jour, no rim backlight. No artificial lighting.
+Lighting: Natural light only — pre-dawn blue through one window, a desk lamp OFF, the room lit by the paling sky alone, soft and cool, faint haze. No contre-jour, no rim backlight. No artificial lighting.
 
 Characters:
-MAYA (@maya) — the same woman, early 30s, dark hair in a fresh tight braid, skin dry and rested, the same teal running singlet — clean and bright, bib not yet pinned.
-LENA (@lena) — her younger sister, mid 20s, oversized grey sweater, sleep-mussed bun, mug of tea cupped in both hands.
-The matte-white smart bottle (@bottle) stands open beside the kitchen tap.
+MARK (@mark) — the same man, mid 30s, dry and rested, the same orange singlet — clean and bright, bib not yet pinned.
+LENA (@lena) — his older sister and coach, early 40s, weathered navy windbreaker with the club crest, stopwatch on a lanyard, tablet in one hand, reading glasses pushed up into short grey-streaked hair.
+The matte-white smart bottle (@bottle) stands open under the club water cooler.
 
 Scene:
-A small sunlit kitchen (@kitchen), early morning of race day. Window over the sink. Maya at the tap filling @bottle, frame-right; Lena leaning on the counter frame-left, three feet away, watching over the rim of her mug. They hold these sides for the whole scene.
+A running-club office (@club) before dawn, race day. Corkboard of route maps behind a scarred desk; one window going pale blue. Lena at the desk over her tablet, frame-left. Mark filling @bottle at the cooler by the window, frame-right, six feet away. They hold these sides for the whole scene.
 
-CUT 1 — Match-cut in: close on Maya's thumb settling onto the LED ring of the capped bottle — dry hand now, clean singlet — 50mm, slight overhead tilt:
-The ring blinks awake: one calm aqua pulse. Her thumb rests on it a beat longer than it needs to. Water drums into the sink behind. Pull focus up to her face — jaw set, eyes already out on the course.
+CUT 1 — Match-cut in: close on Mark's thumb settling onto the LED ring of the capped bottle — dry hand now, clean singlet — 50mm, slight overhead tilt:
+The ring blinks awake: one calm aqua pulse. His thumb rests on it a beat longer than it needs to. The cooler's last gurgle dies behind. Pull focus past his hand to Lena at the desk, out of focus, tapping her tablet.
 
-CUT 2 — Medium two-shot from across the counter, 35mm, static:
-Steam curls off Lena's tea against the window light. Lena (@lena) watches Maya over the mug, a small knowing smile forming. Maya slides the bottle (@bottle) into her belt without looking down — the movement automatic, rehearsed a hundred mornings.
+CUT 2 — Medium two-shot, 35mm, static:
+Lena (@lena) doesn't look up from the tablet; she taps it twice with a knuckle and says it dry, matter-of-fact, no drama: "Kilometer thirty is where it broke you last year." A beat. Her eyes stay on the split chart. "We fixed it." Mark watches her, jaw working — the memory landing and being put away.
 
 CUT 3 — Singles, 85mm, over-the-shoulder pair:
-Maya looks up at Lena. A breath first — then, quiet and level, no bravado, just fact: "Today I finish it." Lena holds her gaze, lowers the mug, nods once — slow, certain. The smallest smile tugs at Maya's mouth.
+Mark takes a breath first — then, quiet and level, no bravado, just fact: "Today I finish it." Lena finally looks up, holds his gaze over the glasses line, and gives one slow, certain nod — the nod of someone who has already run the numbers. The smallest smile tugs at Mark's mouth as he slides @bottle into his belt.
 
-ENDS ON: medium on Maya, bottle secured at her hip, chin lifting toward the door, the smile still forming. (Scene 3 match-cuts to the bottle rising in her fist at the finish.)
+ENDS ON: medium on Mark, bottle secured at his hip, chin lifting toward the door; Lena frame-left already back in the split chart. (Scene 3 match-cuts to the bottle rising between them at the finish.)
 
-SFX: tap water drumming into the bottle then shutting off → the soft click of the cap, kitchen-quiet, a distant street below → her line, close and level; the ceramic tap of Lena's mug set on the counter.</pre>
+SFX: the cooler's gurgle dying out → pre-dawn quiet, a knuckle tapping glass twice, her line dry and close → his line, quieter; the soft click of the bottle into the belt clip.</pre>
       <div class="prod-row">
         <select data-prompt-field="status" data-prompt-id="2a">
           <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
@@ -224,13 +224,13 @@ SFX: tap water drumming into the bottle then shutting off → the soft click of 
     <div class="scene-header">
       <input type="checkbox" data-scene="3">
       <div class="scene-num">3.</div>
-      <div class="scene-desc">Снова финиш — Майя вскидывает бутылку, толпа ревёт; затем пэкшот. <em>Match-cut in: бутылка взлетает в руке.</em></div>
+      <div class="scene-desc">Снова финиш — Лена проходит к Марку через проём в барьере, лоб ко лбу, бутылка между ними; затем пэкшот. <em>Match-cut in: бутылка взлетает между ними.</em></div>
     </div>
 
     <div class="prompt-block">
       <div class="prompt-label">
         <span>Prompt 3a · 15s → ~6s final</span>
-        <span class="badge">🔴 high-risk — толпа в кадре с двух сторон, брызги воды</span>
+        <span class="badge">🔴 high-risk — толпа + контакт двух персонажей в кадре</span>
         <button class="copy-btn">Copy</button>
       </div>
       <pre class="prompt">Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
@@ -243,23 +243,27 @@ Composition: Rule of thirds + golden ratio. Every person moving from frame one.
 Continuity: Characters, props, environment identical across every cut. No identity drift.
 Technical: 24fps smooth motion. 8K detail. No jitter.
 Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
-Lighting: Natural light only — the same bright late-morning sun as scene 1, high and slightly frontal, crisp shadows, light haze down the straight. No contre-jour on her face.
+Lighting: Natural light only — the same bright late-morning sun as scene 1, high and slightly frontal, crisp shadows, light haze down the straight. No contre-jour on faces.
 
 Characters:
-MAYA (@maya_wet) — sweat-soaked, braid loosened, teal singlet darkened, bib 2117, the matte-white bottle (@bottle) in her right fist, aqua LED ring pulsing.
+MARK (@mark_wet) — sweat-soaked, orange singlet darkened, bib 2117, the matte-white bottle (@bottle) in his right fist, aqua LED ring pulsing.
+LENA (@lena) — his coach, navy windbreaker, stopwatch swinging on its lanyard as she moves.
 
 Scene:
-The marathon finish straight (@finish), seconds after scene 1. Per the layout map: Maya just past the line, centered; crowd at the barriers on BOTH sides, staying behind them; finish arch behind her.
+The marathon finish straight (@finish), seconds after scene 1. Per the layout map: Mark just past the line, centered; crowd at the barriers on BOTH sides, staying behind them; Lena entering through the official gap in the barrier, frame-left.
 
-CUT 1 — Match-cut in: low-angle medium, 35mm, slow rise — the bottle (@bottle) sweeps up through frame in her fist, completing the gesture that began in the kitchen:
-She plants her feet and lifts the bottle high overhead. The crowd noise swells — cheers, a whistle, hands drumming the barrier boards. A thin arc of water flicks off the cap, catching the sun. Her exhausted face breaks into a full, open laugh.
+CUT 1 — Match-cut in: the bottle (@bottle) sweeps up through frame in Mark's fist — then the camera widens as Lena strides in from frame-left, 35mm, handheld urgency:
+She isn't running — she's arriving, certain, stopwatch swinging. Mark sees her and his whole exhausted face opens. The crowd noise swells around them.
 
-CUT 2 — Reverse wide from behind her, 24mm, static:
-Her silhouette against the haze and the finish arch, bottle held to the sky, crowd leaning in from both edges of frame but never crossing the barriers — one held, triumphant beat. She lets the arm fall, shakes her head once, still laughing at herself.
+CUT 2 — Medium two-shot, 50mm, slow push-in:
+She grips his shoulders, he grips @bottle, and they lean in — forehead to forehead, both laughing, breath ragged. She says something the crowd swallows; he nods against her forehead. The bottle rises between them, aqua ring pulsing at the center of frame.
 
-ENDS ON: wide from behind — Maya small against the arch, arm down, bottle at her side catching a glint of aqua LED. (The packshot opens on that glint.)
+CUT 3 — Reverse wide from behind them, 24mm, static:
+Their two silhouettes against the haze and the finish arch — coach and runner, foreheads together, @bottle held between them, crowd leaning in from both edges but never crossing the barriers. One held, triumphant beat.
 
-SFX: crowd roar swelling from the first frame, barrier boards drumming → the wet flick of water off the cap → her single breathless laugh above the noise.</pre>
+ENDS ON: wide from behind — the pair small against the arch, the bottle between them catching a glint of aqua LED. (The packshot opens on that glint.)
+
+SFX: crowd roar swelling from the first frame, barrier boards drumming → the slap of her hands on his shoulders, two ragged laughs close and low under the roar.</pre>
       <div class="prod-row">
         <select data-prompt-field="status" data-prompt-id="3a">
           <option value="">⬜ not started</option><option value="gen">🔄 generating</option>
@@ -322,27 +326,27 @@ SFX: near-silence — a faint air-tone, the almost-subliminal tick of a condensa
   "styleCore": "8K IMAX photorealistic; 60:30:10 color; physical cine lens, 180° shutter; pore-level skin; Hollywood acting; real physics; rule of thirds; continuity locked; 24fps; diegetic dialogue and environmental SFX only, no music, no subtitles",
   "lightingByScene": {
     "1": "bright late-morning sun, high slightly frontal, crisp shadows, light haze, no contre-jour",
-    "2": "soft early-morning window light over the sink, even and warm, steam haze, no rim backlight",
+    "2": "pre-dawn blue through one window, room lit by paling sky alone, soft and cool, no rim backlight",
     "3": "same sun as scene 1 (continuity)",
     "3b-packshot": "soft top-light through haze, aqua LED kick as only accent"
   },
   "characters": {
-    "@maya": "athletic woman, early 30s, dark tight braid, teal running singlet (clean), dry and rested — morning state",
-    "@maya_wet": "same woman post-race: sweat-sheened, deep flush, loosened braid, darkened singlet, crumpled bib 2117",
-    "@lena": "younger sister, mid 20s, oversized grey sweater, sleep-mussed bun, mug of tea"
+    "@mark": "lean runner, mid 30s, short dark hair, salt-and-pepper stubble, orange singlet (clean), dry and rested — morning state",
+    "@mark_wet": "same man post-race: sweat-sheened, deep flush, darkened singlet, crumpled bib 2117",
+    "@lena": "his older sister and coach, early 40s, navy club windbreaker, stopwatch lanyard, tablet, reading glasses in grey-streaked hair"
   },
   "assets": {
     "@bottle": "matte-white smart bottle, thin aqua LED ring at base — multi-angle product sheet",
-    "@kitchen": "small sunlit kitchen, window over sink, 3/4 reference",
-    "@finish": "marathon finish straight: arch + barriers with crowd, 3/4 reference",
-    "layoutMap": "finish line -> 3 steps -> cooler stand RIGHT; barriers with crowd both sides"
+    "@club": "running-club office: scarred desk, corkboard of route maps, window, water cooler — 3/4 reference",
+    "@finish": "marathon finish straight: arch + barriers with crowd, official gap frame-left, 3/4 reference",
+    "layoutMap": "finish line -> 3 steps -> cooler stand RIGHT; barriers with crowd both sides; official barrier gap LEFT"
   },
   "scenes": [
-    {"n": 1, "desc": "Finish: exhausted Maya grabs the bottle, LED wakes", "prompts": ["1a"], "risk": {"1a": "high — crowd + product interaction"}, "finalCut": {"1a": "~8s"}, "endsOn": {"1a": "close on hand, thumb on glowing ring"}, "matchCutOut": "thumb-on-ring -> kitchen"},
-    {"n": 2, "desc": "Flashback morning kitchen: dry Maya fills bottle, line to sister", "prompts": ["2a"], "risk": {"2a": "tricky — dialogue + two-person blocking"}, "finalCut": {"2a": "~6s"}, "endsOn": {"2a": "bottle at hip, chin lifting to door"}, "dialogue": {"maya": "Today I finish it."}, "matchCutOut": "bottle to belt -> bottle rising at finish"},
-    {"n": 3, "desc": "Finish celebration + packshot", "prompts": ["3a", "3b"], "risk": {"3a": "high — crowd both sides, water spray", "3b": "safe — product only"}, "finalCut": {"3a": "~6s", "3b": "~5s"}, "endsOn": {"3a": "wide from behind, LED glint at her side", "3b": "static logo framing, steady glow — final frame"}}
+    {"n": 1, "desc": "Finish: exhausted Mark grabs the bottle, LED wakes", "prompts": ["1a"], "risk": {"1a": "high — crowd + product interaction"}, "finalCut": {"1a": "~8s"}, "endsOn": {"1a": "close on hand, thumb on glowing ring"}, "matchCutOut": "thumb-on-ring -> club office"},
+    {"n": 2, "desc": "Flashback pre-dawn club office: coach Lena calls the pace plan, Mark fills the bottle", "prompts": ["2a"], "risk": {"2a": "tricky — two dialogue beats + two-person blocking"}, "finalCut": {"2a": "~6s"}, "endsOn": {"2a": "bottle at hip, chin lifting to door; Lena back in the chart"}, "dialogue": {"lena": "Kilometer thirty is where it broke you last year. We fixed it.", "mark": "Today I finish it."}, "matchCutOut": "bottle to belt -> bottle rising between them at finish"},
+    {"n": 3, "desc": "Finish celebration — coach and runner forehead to forehead + packshot", "prompts": ["3a", "3b"], "risk": {"3a": "high — crowd + two-person contact", "3b": "safe — product only"}, "finalCut": {"3a": "~6s", "3b": "~5s"}, "endsOn": {"3a": "wide from behind, LED glint between them", "3b": "static logo framing, steady glow — final frame"}}
   ],
-  "continuityNotes": "Reverse chronology: scenes 1 and 3 are @maya_wet, scene 2 (flashback) is @maya dry with clean singlet and unpinned bib. Same singlet garment across all scenes. Crowd never crosses barriers. LED ring: pulse on grip, steady in packshot."
+  "continuityNotes": "Reverse chronology: scenes 1 and 3 are @mark_wet, scene 2 (flashback) is @mark dry with clean singlet and unpinned bib. Same singlet garment across all scenes. Lena identical in scenes 2 and 3 (windbreaker, stopwatch, tablet left behind in 3). Crowd never crosses barriers; Lena enters ONLY through the official gap. LED ring: pulse on grip, steady in packshot."
 }
 </script>
 
