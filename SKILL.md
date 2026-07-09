@@ -1,6 +1,6 @@
 ---
 name: seedance-shotlist-director
-description: Generate a director's shotlist as an editable HTML production board for Seedance 2.0 video production. Use this skill whenever the user provides a script, scene breakdown, story idea, or treatment and wants it turned into a numbered shotlist with English Seedance 2.0 prompts. Trigger on phrases like "make a shotlist", "режиссерский шотлист", "break this script into prompts", "generate prompts for Seedance", "shotlist for this scene", or any request to convert narrative content into shot-by-shot prompts. Also use when the user wants to update, revise, or extend an existing shotlist HTML — re-render the same document with their changes applied (read the embedded Project Bible JSON to restore full context). Each prompt targets 15 seconds of screen time; longer scenes are split across multiple prompts under the same scene number. Output is a single editable HTML file with per-prompt production statuses, keeper timecodes, an asset checklist, a repair guide, a global Style Prefix block, and CUT-separated shots inside each prompt.
+description: Generate a director's shotlist as an editable HTML production board for Seedance 2.0 video production. Use this skill whenever the user provides a script, scene breakdown, story idea, or treatment and wants it turned into a numbered shotlist with English Seedance 2.0 prompts. Trigger on phrases like "make a shotlist", "режиссерский шотлист", "break this script into prompts", "generate prompts for Seedance", "shotlist for this scene", or any request to convert narrative content into shot-by-shot prompts. Also use when the user wants to update, revise, or extend an existing shotlist HTML — re-render the same document with their changes applied (read the embedded Project Bible JSON to restore full context). BOUNDARY — this skill is tuned for Seedance 2.0 specifically. If the user explicitly targets a different video model (Veo, Kling, Runway, Wan, Sora, Hailuo…), do not silently apply the Seedance format: say the skill is Seedance-tuned, keep the directing method (blocking, cuts, continuity), and adapt the prompt container to that model's documented format instead. Each prompt targets 15 seconds of screen time; longer scenes are split across multiple prompts under the same scene number. Output is a single editable HTML file with per-prompt production statuses, keeper timecodes, an asset checklist, a repair guide, a global Style Prefix block, and CUT-separated shots inside each prompt.
 ---
 
 # Seedance 2.0 Shotlist Director
@@ -45,7 +45,7 @@ Seedance consistency lives and dies on locked reference assets. Before writing a
    - Character state variant: separate wet/dirty/bloodied version, built once, reused
    - Location: ¾ angle reference with depth (so the camera can move)
    - Product/prop: multi-angle sheet (GPT Image or similar)
-   - For complex staging: a **layout map** — a simple overhead schematic pinning where things stand relative to each other; reference it in the Scene block instead of describing geometry in prose
+   - For complex staging: a **layout map** — an overhead schematic pinning where things stand relative to each other; reference it in the Scene block instead of describing geometry in prose. **Don't just tell the user to make one — draw it**: embed a small inline SVG right in that scene's block in the HTML (see "Layout maps" below). The user screenshots it and uploads it to Higgsfield as a reference Element (e.g. `@map_finish`).
 
 If the user has already uploaded asset images or given @names in the conversation, use their names verbatim. If not, invent clear names and tell the user to create matching Elements.
 
@@ -139,6 +139,35 @@ Mark every prompt:
 - 🔴 **high-risk** — crowds, complex choreography, text in frame, water/particles, fast camera + fast subject. 5–10+ attempts.
 
 State WHY in one clause. Advise the user to generate 🔴 prompts first — if a high-risk shot won't land, cheaper to redesign the scene before the safe shots are already paid for.
+
+### Layout maps (draw them, don't describe them)
+
+Whenever a scene has 3+ positioned things (characters, props, entrances) or any prompt in it hit the "wrong spatial layout" failure, generate an **inline SVG overhead schematic** inside that scene's block in the HTML:
+
+- Simple shapes only: rectangles for structures (barriers, counters, walls), circles for people, a diamond for the hero prop, arrows for movement direction, a camera glyph (▶ rotated) for each CUT's camera position.
+- Label everything with the same @names used in the prompts (`@mark`, `@bottle`, gap, finish line).
+- Dark background matching the board (`#1d1d21`), thin light strokes, ~700×300, `max-width:100%`.
+- Under the SVG, one caption line: "Upload a screenshot of this map to Higgsfield as `@map_<scene>` and it is referenced in the Scene block."
+- In the prompt's Scene text, reference it: "Per the layout map (@map_finish): …" — spatial relations then live in the image, not in fragile prose.
+
+### Aspect ratios and deliverables
+
+The default board is **16:9**. Real ad campaigns also ship 9:16 (Reels/Shorts/TikTok) and 1:1 (feed). Handle it in two layers:
+
+1. **Always, in every prompt**: compose center-safe. Keep the key action and the product inside the central ~40% of frame width, avoid staging critical business at the extreme left/right edges, and never put must-read elements in the top/bottom 10% (platform UI overlays live there). This costs nothing and makes reframing possible.
+2. **On request** ("сделай вертикальную версию", "нужен 9:16"): re-render the board — or add a per-prompt variant block — with recomposed framing, not just a changed ratio word: tighter shot sizes (medium → medium-close), vertical blocking (stack characters in depth instead of side-by-side), camera height adjusted so headroom works in 9:16. Add `9:16 vertical` / `1:1 square` to the Style line of each variant prompt and label variants `1a-v` (vertical) / `1a-sq` (square). Same scene numbers, same checkboxes — statuses are tracked per variant id.
+
+Keep the Style CORE stable across variants — center-safe is a composition instruction that lives inside the CUT lines where framing is described, not another CORE rule.
+
+### Music sync (when the user provides a track or BPM)
+
+If the user gives a music track, a reference, or a BPM ("монтаж под 120 BPM", attaches an audio file, names a song):
+
+- Compute the beat grid: at **B BPM, one beat = 60/B seconds; one 4/4 bar = 240/B seconds**. At 120 BPM: beat 0.5s, bar 2s — a 15s prompt holds 7.5 bars.
+- **Cut on the bar, move on the beat.** Design each CUT's length as a whole number of bars (2 bars / 4 bars), and write physical actions ON numbered beats: "BEAT 1 — heel plants; BEAT 2 — shoulder drop; BEATS 3–4 — the spin". This is how choreography, jump-cut montages, and product reveals lock to the track in the edit.
+- Note the grid in the prompt label ("Prompt 2a · 15s · 120 BPM · cuts on bars") and put the beat plan inside the CUT lines, not as a separate block.
+- The generation itself stays **without music** (Audio spec: diegetic only) — the track is added in post; the beat grid only shapes the TIMING of action so the edit lands on it. If Higgsfield's music-input feature is used instead, name the track as an asset (`@music_track`) in the Asset Checklist and say the choreography references it.
+- Store `bpm` and the per-prompt bar plan in the Project Bible JSON so revisions keep the grid.
 
 ---
 
@@ -258,7 +287,8 @@ Key requirements:
 - Runtime summary line under the title: target final length · prompt count · total generation seconds.
 - Risk badge and final-cut target shown in each prompt's label row.
 - Scene description lines in the **user's language**; all prompt text in English.
-- **Project Bible**: at the end of `<body>`, embed `<script type="application/json" id="project-bible">` containing: project title + slug, style prefix (core + per-scene lighting), characters (with @names, descriptions, state variants), assets checklist, and a scene map (scene numbers, descriptions, prompt ids, risk, final-cut targets, ENDS ON handoffs). Valid JSON, escape `</script>` sequences.
+- **Project Bible**: at the end of `<body>`, embed `<script type="application/json" id="project-bible">` containing: project title + slug, style prefix (core + per-scene lighting), characters (with @names, descriptions, state variants), assets checklist, a scene map (scene numbers, descriptions, prompt ids, risk, final-cut targets, ENDS ON handoffs), and — when relevant — `bpm` with the per-prompt bar plan and the aspect-ratio variants shipped. Valid JSON, escape `</script>` sequences.
+- **Layout map SVGs**: scenes with complex staging get an inline SVG schematic between the scene header and the first prompt block (see "Layout maps").
 
 HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{ASSET_CHECKLIST_HTML}}`, `{{STYLE_PREFIX_TEXT}}`, `{{REPAIR_GUIDE_HTML}}`, `{{SCENES_HTML}}`, `{{PROJECT_BIBLE_JSON}}`):
 
@@ -464,6 +494,21 @@ SFX: rain against glass from frame one → the door's hinge, her wet footfalls o
 ```
 
 Notice: the script gave you 28 words. The prompt is detailed because the **directing** is detailed — blocking, eye-line, what each character is doing with their body, what the camera sees and when, what the light is doing, and an exact handoff frame for whatever comes next. That's the job.
+
+### A worked revision (the most common real request)
+
+The user comes back: *"Разбей сцену 1 на две — хочу дольше подержать её в дверях."*
+
+What you do — and don't do:
+
+1. Read the Project Bible from the existing HTML (characters, slug, style, statuses survive).
+2. Scene 1 becomes prompts `1a` + `1b`. **The scene number does not change**, the checkbox does not change, `data-scene="1"` stays — her saved progress is untouched.
+3. `1a` = the doorway alone, given full air: the door, the silhouette, the drip, his head-tilt — 15 seconds of standing still that now has room to work. It gets a **new ENDS ON**: "Anna mid-first-step from the door, eyes still down; Marco's eyes just lifting."
+4. `1b` opens from exactly that frame and carries the cross + his close-up. Its ENDS ON is the OLD 1a's ENDS ON — the handoff to scene 2 is preserved, so scene 2 needs no regeneration.
+5. Statuses: `1a` keeps the old prompt's saved status only if the user says the doorway keeper survives; otherwise both start ⬜. Say which in chat, one line.
+6. Re-render the same file, same slug, and present it. Total diff: one scene touched, zero renumbering, zero collateral regeneration.
+
+The instinct to resist: rewriting neighboring scenes "while you're at it". A revision touches what the user asked and the minimum around it — regeneration costs the user money.
 
 ---
 

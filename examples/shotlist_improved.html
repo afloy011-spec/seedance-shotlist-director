@@ -76,7 +76,7 @@
 @bottle — продукт: матово-белая смарт-бутылка, LED-кольцо аква у основания — мультиракурсный продакт-шит (GPT Image)
 @club — офис бегового клуба: стол, корборд с картами маршрутов, окно, кулер — ¾-ракурс с глубиной
 @finish — финишная прямая: арка + барьеры с толпой, ¾-ракурс
-Layout map (сцены 1 и 3): линия финиша → 3 шага → стойка-кулер справа; барьеры с толпой по обе стороны; служебный проём в барьере слева</div>
+@map_finish — layout map сцен 1 и 3: SVG-схема нарисована в блоке сцены 1 ниже — заскринь и загрузи как Element</div>
   </details>
 
   <details class="top-block"><summary>🎨 Global Style Prefix (core — в каждом промпте)</summary>
@@ -116,6 +116,40 @@ Audio: Diegetic dialogue and environmental SFX only. No music. No subtitles.
       <div class="scene-desc">Финиш марафона — измотанный Марк пересекает черту и хватает бутылку; LED-кольцо просыпается. <em>Match-cut out: большой палец на LED-кольце → тот же жест в клубе.</em></div>
     </div>
 
+    <div style="background:#1d1d21;border:1px solid #2a2a30;border-radius:6px;padding:12px;margin-bottom:4px;">
+      <svg viewBox="0 0 700 300" style="max-width:100%;display:block;" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Layout map: finish straight">
+        <rect x="0" y="0" width="700" height="300" fill="#1d1d21"/>
+        <!-- barriers -->
+        <rect x="60" y="40" width="580" height="10" fill="none" stroke="#9a9aa2" stroke-width="2"/>
+        <rect x="60" y="250" width="580" height="10" fill="none" stroke="#9a9aa2" stroke-width="2"/>
+        <text x="350" y="30" fill="#9a9aa2" font-size="13" text-anchor="middle" font-family="monospace">crowd behind barrier (never crosses)</text>
+        <text x="350" y="285" fill="#9a9aa2" font-size="13" text-anchor="middle" font-family="monospace">crowd behind barrier (never crosses)</text>
+        <!-- official gap -->
+        <rect x="60" y="250" width="70" height="10" fill="#1d1d21"/>
+        <text x="95" y="240" fill="#d4a259" font-size="12" text-anchor="middle" font-family="monospace">official gap (@lena enters, scene 3)</text>
+        <!-- finish line + arch -->
+        <line x1="200" y1="55" x2="200" y2="245" stroke="#e8e8ea" stroke-width="3" stroke-dasharray="8 6"/>
+        <text x="200" y="150" fill="#e8e8ea" font-size="12" text-anchor="middle" font-family="monospace" transform="rotate(-90 190 150)">FINISH LINE / arch</text>
+        <!-- run direction -->
+        <line x1="90" y1="150" x2="170" y2="150" stroke="#4ade80" stroke-width="2" marker-end="url(#arr)"/>
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#4ade80" stroke-width="1.5"/></marker></defs>
+        <!-- Mark -->
+        <circle cx="290" cy="150" r="14" fill="none" stroke="#4ade80" stroke-width="2.5"/>
+        <text x="290" y="185" fill="#4ade80" font-size="13" text-anchor="middle" font-family="monospace">@mark_wet</text>
+        <!-- cooler stand: 3 steps past line, RIGHT -->
+        <rect x="330" y="205" width="26" height="26" fill="none" stroke="#d4a259" stroke-width="2.5" transform="rotate(45 343 218)"/>
+        <text x="343" y="196" fill="#d4a259" font-size="13" text-anchor="middle" font-family="monospace">@bottle · cooler stand</text>
+        <!-- cameras -->
+        <text x="430" y="155" fill="#9a9aa2" font-size="15" font-family="monospace">▶</text>
+        <text x="450" y="155" fill="#9a9aa2" font-size="11" font-family="monospace">CUT 1 (dolly back)</text>
+        <text x="343" y="255" fill="#9a9aa2" font-size="15" font-family="monospace">▲</text>
+        <text x="362" y="255" fill="#9a9aa2" font-size="11" font-family="monospace">CUT 2 (static, stand)</text>
+        <text x="255" y="115" fill="#9a9aa2" font-size="15" font-family="monospace">◀</text>
+        <text x="150" y="100" fill="#9a9aa2" font-size="11" font-family="monospace">CUT 3 (85mm profile)</text>
+      </svg>
+      <div style="font-size:12px;color:#9a9aa2;margin-top:8px;">Layout map сцен 1 и 3 — заскринь и загрузи в Higgsfield как <code style="color:#d4a259;">@map_finish</code>; промпты ссылаются на неё в Scene-блоке.</div>
+    </div>
+
     <div class="prompt-block">
       <div class="prompt-label">
         <span>Prompt 1a · 15s → ~8s final</span>
@@ -139,7 +173,7 @@ MARK (@mark_wet) — lean runner, mid 30s, short dark hair, salt-and-pepper stub
 The matte-white smart bottle (@bottle — thin aqua LED ring at the base) waits in a branded cooler stand.
 
 Scene:
-A city marathon finish straight (@finish), late morning. Per the layout map: finish arch behind him, crowd leaning over barriers on BOTH sides and staying behind them, the cooler stand with @bottle three steps past the line on the RIGHT. Mark crosses the line at a broken, exhausted stride.
+A city marathon finish straight (@finish), late morning. Per the layout map (@map_finish): finish arch behind him, crowd leaning over barriers on BOTH sides and staying behind them, the cooler stand with @bottle three steps past the line on the RIGHT. Mark crosses the line at a broken, exhausted stride.
 
 CUT 1 — Wide tracking from ahead of him, 35mm, dolly back matching his stride:
 Mark (@mark_wet) staggers across the finish line, arms dropping, stride breaking from run to walk. His chest heaves; he squints against the light. The crowd claps and leans over the barriers — nobody crosses them. His eyes find the cooler stand right of frame — a beat of pure want.
@@ -250,7 +284,7 @@ MARK (@mark_wet) — sweat-soaked, orange singlet darkened, bib 2117, the matte-
 LENA (@lena) — his coach, navy windbreaker, stopwatch swinging on its lanyard as she moves.
 
 Scene:
-The marathon finish straight (@finish), seconds after scene 1. Per the layout map: Mark just past the line, centered; crowd at the barriers on BOTH sides, staying behind them; Lena entering through the official gap in the barrier, frame-left.
+The marathon finish straight (@finish), seconds after scene 1. Per the layout map (@map_finish): Mark just past the line, centered; crowd at the barriers on BOTH sides, staying behind them; Lena entering through the official gap in the barrier, frame-left.
 
 CUT 1 — Match-cut in: the bottle (@bottle) sweeps up through frame in Mark's fist — then the camera widens as Lena strides in from frame-left, 35mm, handheld urgency:
 She isn't running — she's arriving, certain, stopwatch swinging. Mark sees her and his whole exhausted face opens. The crowd noise swells around them.
@@ -339,7 +373,7 @@ SFX: near-silence — a faint air-tone, the almost-subliminal tick of a condensa
     "@bottle": "matte-white smart bottle, thin aqua LED ring at base — multi-angle product sheet",
     "@club": "running-club office: scarred desk, corkboard of route maps, window, water cooler — 3/4 reference",
     "@finish": "marathon finish straight: arch + barriers with crowd, official gap frame-left, 3/4 reference",
-    "layoutMap": "finish line -> 3 steps -> cooler stand RIGHT; barriers with crowd both sides; official barrier gap LEFT"
+    "@map_finish": "SVG overhead schematic embedded in scene 1 block (finish line -> 3 steps -> cooler stand RIGHT; barriers both sides; official gap LEFT) — user screenshots it and uploads as a Higgsfield Element"
   },
   "scenes": [
     {"n": 1, "desc": "Finish: exhausted Mark grabs the bottle, LED wakes", "prompts": ["1a"], "risk": {"1a": "high — crowd + product interaction"}, "finalCut": {"1a": "~8s"}, "endsOn": {"1a": "close on hand, thumb on glowing ring"}, "matchCutOut": "thumb-on-ring -> club office"},
