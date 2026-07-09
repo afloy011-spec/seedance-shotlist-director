@@ -18,7 +18,7 @@ Any edit to `SKILL.md` gets re-run against these three scenarios. Generate a sho
 
 **Stresses:** 8 scenes, character state machine (dry → waist-wet → soaked → drying → dry-in-new-layer), each state = @asset variant; product in every scene without drift; lighting design across dawn/noon/storm/fog/sunset/night (six different Lighting lines — any two identical = fail); handoff chain across 10+ prompts; layout map for the campsite scene.
 
-**Expected shape:** 8 scenes, 10–14 prompts, at least 4 named state variants of the heroine, ENDS ON chain unbroken, campsite SVG map.
+**Expected shape:** 8 scenes, 10–14 prompts, at least 4 named state variants of the heroine, ENDS ON chain unbroken, campsite layout map in the Asset Checklist.
 
 ## Scenario G3 — dialogue and rhythm shift (drama)
 
