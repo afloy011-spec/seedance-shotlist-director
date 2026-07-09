@@ -29,7 +29,7 @@ A single HTML file (`shotlist.html`) saved to the current working directory (or 
      - **editable text** — the prompt is click-to-edit in place; edits persist in localStorage, an "edited" badge appears, a Reset button restores the generated original, and Copy always grabs the CURRENT text
      - a **language mirror** (when the user's language isn't English) — a translation of the full prompt pre-generated at build time, behind a RU/EN toggle; reading aid only, Copy always copies the English prompt
 6. **Project Bible** — an embedded `<script type="application/json" id="project-bible">` block holding characters, assets, style decisions, and scene map, so a future Claude session can restore full context from the file alone
-7. A small "How to use" note at the top.
+7. A **collapsed "How to use" block** — a `<details>` with a structured list (one topic per line, bold lead word) and a `<kbd>`-chip shortcuts row. Never a wall of prose. The Export edits button lives in the topbar next to the runtime summary, not inside the help text.
 
 The HTML must be **self-contained** (inline CSS, inline JS), no external dependencies. All state (statuses, keepers, notes, scene checkboxes) persists in `localStorage` **namespaced by project slug** so two different shotlists opened from the same disk never share state.
 
@@ -280,7 +280,8 @@ Key requirements:
 - **Editable prompts**: `pre.prompt` carries `data-prompt-id` and is made `contenteditable="plaintext-only"` (fallback `true`). On input, the current text saves to `sd-{slug}-p-{promptId}-edit`; an "edited" badge and a Reset button appear. Reset restores the original (captured into a JS Map at load, before applying saved edits) and clears the key. Copy copies the current DOM text — edits included. The howto warns: manual edits live only in this browser; when asking Claude for revisions, mention them or paste the edited prompt.
 - **Language mirror**: if the user's language is not English, every prompt gets a second `<pre class="prompt-mirror" hidden>` with a faithful translation written at generation time — never machine-translated at runtime, the file stays offline. Dialogue lines stay in English with a «…» translation in parentheses. A per-prompt EN/RU toggle button swaps which `<pre>` is visible; the mirror is read-only and Copy ignores it.
 - **Stale-translation notice**: the mirror translates the ORIGINAL prompt. When a local edit exists AND the mirror is visible, show a `.mirror-stale` banner above it («перевод соответствует исходной версии — Export edits → попроси Claude обновить»). Hidden again after Reset.
-- **Export edits**: a global "Export edits" button in the howto block collects every locally edited prompt (`sd-{slug}-p-*-edit`) into one paste-ready text («=== Prompt 1a (edited) === …») and copies it to the clipboard — this is the bridge that gets browser-local edits back to Claude for baking in and re-translating.
+- **Export edits**: a global "Export edits" button in the topbar (right of the runtime summary) collects every locally edited prompt (`sd-{slug}-p-*-edit`) into one paste-ready text («=== Prompt 1a (edited) === …») and copies it to the clipboard — this is the bridge that gets browser-local edits back to Claude for baking in and re-translating.
+- **Help block hygiene**: the "How to use" `<details>` is collapsed by default; content is a list (one topic per `<li>`, bold lead word) plus a `.kbd-row` of `<kbd>` chips for shortcuts. Prose walls are forbidden.
 - **Paste hygiene**: prompts force plain text — `paste` is intercepted (`preventDefault` + `insertText` with `text/plain`) and `drop` is blocked, so pasted rich content can never inject markup into the DOM even where `plaintext-only` isn't supported.
 - **Accessibility & viewport**: `<meta name="viewport">` present; `<html lang>` = the user's language, prompt `<pre>` elements carry `lang="en"`; every button has a `title` tooltip (with its shortcut); `:focus-visible` outlines on buttons, inputs, selects, summaries; the RU toggle exposes `aria-pressed` and an `.active` accent state.
 - **Button layout**: all per-prompt controls (edited badge, Reset, RU/EN, Copy) sit together in one `.prompt-actions` group pushed to the right edge of the label row (`margin-left: auto`) — never scattered across the row.
@@ -313,9 +314,17 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
   .container { max-width: 980px; margin: 0 auto; }
   h1 { font-size: 28px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.02em; }
   .subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 8px; }
-  .runtime { color: var(--accent); font-size: 13px; margin-bottom: 24px; }
-  .howto { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
-    padding: 14px 18px; font-size: 13px; color: var(--text-dim); margin-bottom: 24px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    flex-wrap: wrap; margin-bottom: 20px; }
+  .runtime { color: var(--accent); font-size: 13px; }
+  details.howto ul { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 7px;
+    font-size: 13px; color: var(--text-dim); }
+  details.howto li b { color: var(--text); font-weight: 600; }
+  .kbd-row { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px;
+    color: var(--text-dim); align-items: center; }
+  kbd { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 11px; color: var(--text);
+    background: var(--panel-2); border: 1px solid var(--border); border-bottom-width: 2px;
+    border-radius: 4px; padding: 1px 6px; }
   details.top-block { background: var(--panel); border: 1px solid var(--border);
     border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; }
   details.top-block summary { cursor: pointer; font-weight: 600; color: var(--accent); user-select: none; }
@@ -374,16 +383,28 @@ HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{A
 <div class="container" data-slug="{{SLUG}}">
   <h1>{{PROJECT_TITLE}}</h1>
   <div class="subtitle">Director's Shotlist · Seedance 2.0</div>
-  <div class="runtime">{{RUNTIME_SUMMARY}}</div>
-
-  <div class="howto">
-    Build every asset in the checklist FIRST, generate 🔴 high-risk prompts first.
-    Copy grabs the full standalone prompt. Track status / keeper timecode / notes per prompt — everything saves automatically.
-    Prompts are click-to-edit; local edits live only in this browser — mention them (or paste the edited prompt) when asking Claude for revisions. RU/EN toggles the translation; Copy always copies English.
-    Shortcuts: <b>Ctrl+Z / Ctrl+Y</b> — undo/redo while editing · <b>Ctrl+Shift+C</b> — copy the prompt under the cursor · <b>Ctrl+Shift+L</b> — RU/EN · <b>Esc</b> — finish editing.
-    A generation failed? Open the Repair Guide. Want changes? Give this file back to Claude.
-    <button class="tool-btn" id="export-edits" style="margin-left:6px" title="Скопировать все отредактированные промпты — вставь их в чат Claude, чтобы правки попали в файл и переводы обновились">Export edits</button>
+  <div class="topbar">
+    <div class="runtime">{{RUNTIME_SUMMARY}}</div>
+    <button class="tool-btn" id="export-edits" title="[user language] Copy all locally edited prompts — paste into Claude to bake them into the file and refresh translations">Export edits</button>
   </div>
+
+  <details class="top-block howto">
+    <summary>ℹ️ How to use · shortcuts</summary> <!-- in the user's language -->
+    <ul>
+      <li><b>Order:</b> build the checklist assets → generate 🔴 high-risk prompts first.</li>
+      <li><b>Copy</b> — the full standalone prompt, always English.</li>
+      <li><b>Click into a prompt</b> to edit. Local edits live only in this browser: to bake them into the file and refresh the translation — <b>Export edits</b> → paste into Claude.</li>
+      <li><b>RU</b> — read-only translation of the prompt.</li>
+      <li><b>Statuses, keepers, notes</b> — saved automatically.</li>
+      <li><b>Stuck?</b> Open the Repair Guide. Scene changes — give this file back to Claude.</li>
+    </ul>
+    <div class="kbd-row">
+      <span><kbd>Ctrl</kbd>+<kbd>Z</kbd>/<kbd>Y</kbd> undo · redo</span>
+      <span><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> copy prompt</span>
+      <span><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> RU / EN</span>
+      <span><kbd>Esc</kbd> finish editing</span>
+    </div>
+  </details>
 
   <details class="top-block" open><summary>📦 Asset Checklist — build these before generating</summary>
     <div class="inner">{{ASSET_CHECKLIST_HTML}}</div>

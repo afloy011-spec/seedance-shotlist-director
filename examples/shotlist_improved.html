@@ -17,9 +17,17 @@
   .container { max-width: 980px; margin: 0 auto; }
   h1 { font-size: 28px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.02em; }
   .subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 8px; }
-  .runtime { color: var(--accent); font-size: 13px; margin-bottom: 24px; }
-  .howto { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
-    padding: 14px 18px; font-size: 13px; color: var(--text-dim); margin-bottom: 24px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    flex-wrap: wrap; margin-bottom: 20px; }
+  .runtime { color: var(--accent); font-size: 13px; }
+  details.howto ul { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 7px;
+    font-size: 13px; color: var(--text-dim); }
+  details.howto li b { color: var(--text); font-weight: 600; }
+  .kbd-row { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px;
+    color: var(--text-dim); align-items: center; }
+  kbd { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 11px; color: var(--text);
+    background: var(--panel-2); border: 1px solid var(--border); border-bottom-width: 2px;
+    border-radius: 4px; padding: 1px 6px; }
   details.top-block { background: var(--panel); border: 1px solid var(--border);
     border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; }
   details.top-block summary { cursor: pointer; font-weight: 600; color: var(--accent); user-select: none; }
@@ -78,16 +86,28 @@
 <div class="container" data-slug="aquapulse">
   <h1>AquaPulse</h1>
   <div class="subtitle">Director's Shotlist · Seedance 2.0</div>
-  <div class="runtime">Целевой ролик: ~25s · 4 промпта · 60s генерации · киперы: 8+6+6+5s</div>
-
-  <div class="howto">
-    Сначала собери все ассеты из чеклиста, генерируй 🔴-промпты первыми.
-    Copy забирает полный автономный промпт. Отмечай статус / таймкод кипера / заметки — всё сохраняется само.
-    Текст промпта редактируется кликом — правки живут только в этом браузере (упомяни их, когда попросишь Claude о ревизии). Кнопка RU показывает перевод; Copy всегда копирует английский.
-    Шоткаты: <b>Ctrl+Z / Ctrl+Y</b> — отмена/повтор при редактировании · <b>Ctrl+Shift+C</b> — скопировать промпт под курсором · <b>Ctrl+Shift+L</b> — RU/EN · <b>Esc</b> — выйти из редактирования.
-    Генерация не удалась? Открой Repair Guide. Нужны правки? Просто отдай этот файл Claude.
-    <button class="tool-btn" id="export-edits" style="margin-left:6px" title="Скопировать все отредактированные промпты — вставь их в чат Claude, чтобы правки попали в файл и переводы обновились">Export edits</button>
+  <div class="topbar">
+    <div class="runtime">Целевой ролик: ~25s · 4 промпта · 60s генерации · киперы: 8+6+6+5s</div>
+    <button class="tool-btn" id="export-edits" title="Скопировать все отредактированные промпты — вставь их в чат Claude, чтобы правки попали в файл и переводы обновились">Export edits</button>
   </div>
+
+  <details class="top-block howto">
+    <summary>ℹ️ Как пользоваться · шоткаты</summary>
+    <ul>
+      <li><b>Порядок:</b> собери ассеты из чеклиста → генерируй 🔴-промпты первыми.</li>
+      <li><b>Copy</b> — полный автономный промпт, всегда на английском.</li>
+      <li><b>Клик по тексту промпта</b> — редактирование. Правки живут только в этом браузере: чтобы внести их в файл и обновить перевод — <b>Export edits</b> → вставь в чат Claude.</li>
+      <li><b>RU</b> — перевод промпта, только для чтения.</li>
+      <li><b>Статусы, киперы, заметки</b> — сохраняются автоматически.</li>
+      <li><b>Не получилось?</b> Открой Repair Guide. Правки сцен — просто отдай этот файл Claude.</li>
+    </ul>
+    <div class="kbd-row">
+      <span><kbd>Ctrl</kbd>+<kbd>Z</kbd>/<kbd>Y</kbd> отмена · повтор</span>
+      <span><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> копировать промпт</span>
+      <span><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> RU / EN</span>
+      <span><kbd>Esc</kbd> закончить редактирование</span>
+    </div>
+  </details>
 
   <details class="top-block" open><summary>📦 Asset Checklist — собери ДО генерации</summary>
     <div class="inner">@mark — герой (сухой, свежий): локнутый фейс-клоузап + фулбоди в оранжевом синглете (Soul Cinema)
