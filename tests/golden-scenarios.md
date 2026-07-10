@@ -1,6 +1,12 @@
-# Golden scenarios — regression tests for SKILL.md changes
+# Golden scenarios — regression tests for skill changes
 
-Any edit to `SKILL.md` gets re-run against these three scenarios. Generate a shotlist for each, then walk the checklist below. A regression on a **blocking** criterion means the skill change is rejected.
+Any edit to `SKILL.md` or `references/` gets re-run against these three scenarios. Generate a shotlist for each, run the validator, then walk the manual checklist. A regression on a **blocking** criterion means the skill change is rejected.
+
+```
+node scripts/validate.mjs shotlist.html
+```
+
+The validator covers the mechanical half of the blocking criteria (marked `[auto]` below) — structure, escaping, namespacing, Bible integrity, per-prompt controls, ENDS ON / SFX presence, English-only prompts, @references. What it cannot judge — dramatic quality, semantic continuity, whether the handoff frames actually match — stays manual.
 
 ---
 
@@ -34,29 +40,29 @@ Any edit to `SKILL.md` gets re-run against these three scenarios. Generate a sho
 
 Blocking (any FAIL rejects the change):
 
-- [ ] B1. Every character/prop/location referenced with @names; state variants have own @names
-- [ ] B2. Every prompt ends with ENDS ON; consecutive prompts chain (ENDS ON N == opening frame N+1)
-- [ ] B3. Lighting line designed per scene; no two scenes with different time-of-day/mood share one verbatim
-- [ ] B4. Prompts are English regardless of input language; scene descriptions in the user's language
-- [ ] B5. Copy-block is standalone (CORE + Lighting + Characters + Scene + CUTs + ENDS ON + SFX)
-- [ ] B6. localStorage keys namespaced by slug; Project Bible JSON parses (`ConvertFrom-Json` / `JSON.parse`)
-- [ ] B7. One checkbox per scene, statuses per prompt id
-- [ ] B8. No abstract emotion without physical action ("she is sad" → fail); no unmotivated camera
-- [ ] B9. Dialogue lines quoted with delivery direction; audio spec permits diegetic dialogue
-- [ ] B10. G2 only: state machine correct in every prompt (wet where wet, dry where dry, no teleporting states)
+- [ ] B1. `[auto]` Every character/prop/location referenced with @names; `[manual]` state variants have own @names
+- [ ] B2. `[auto]` Every prompt ends with ENDS ON + SFX; `[manual]` consecutive prompts actually chain (ENDS ON N == opening frame N+1)
+- [ ] B3. `[auto-warn]` No two scenes share one verbatim Lighting line; `[manual]` each line fits the scene's time-of-day/mood
+- [ ] B4. `[auto]` Prompts are English regardless of input language; `[manual]` scene descriptions in the user's language
+- [ ] B5. `[auto]` Copy-block is standalone (CORE + Lighting + Characters + Scene + CUTs + ENDS ON + SFX)
+- [ ] B6. `[auto]` localStorage keys namespaced by slug; Project Bible JSON parses, has required keys, matches DOM ids
+- [ ] B7. `[auto]` One checkbox per scene, status/keeper/notes controls per prompt id
+- [ ] B8. `[manual]` No abstract emotion without physical action ("she is sad" → fail); no unmotivated camera
+- [ ] B9. `[manual]` Dialogue lines quoted with delivery direction; audio spec permits diegetic dialogue
+- [ ] B10. `[manual]` G2 only: state machine correct in every prompt (wet where wet, dry where dry, no teleporting states)
 
 Scored (grade 1–10, target ≥8 each):
 
-- [ ] S1. Dramatic split — prompt boundaries follow beats, not arithmetic (G3 is the probe)
-- [ ] S2. Risk badges plausible (color-coded text, no emoji), with reasons; high-risk-first advice present
-- [ ] S3. Final-cut targets and runtime summary present and arithmetically consistent
-- [ ] S4. Asset Checklist complete — nothing referenced in prompts is missing from it
-- [ ] S5. Repair Guide present with symptom→fix mappings intact
-- [ ] S6. Layout map described in the Asset Checklist where staging is complex (G2 campsite; G3 optional)
-- [ ] S7. Match-cuts designed between scenes where the material allows
-- [ ] S8. Center-safe composition noted in CUT framing (reframe-ready for 9:16/1:1)
-- [ ] S9. Prompts are click-to-edit with persisted edits + Reset; non-English user gets a read-only language mirror per prompt (RU/EN toggle), Copy always copies English
+- [ ] S1. `[manual]` Dramatic split — prompt boundaries follow beats, not arithmetic (G3 is the probe)
+- [ ] S2. `[auto]` badge present per prompt · `[manual]` risk level plausible, reason given, high-risk-first advice present
+- [ ] S3. `[auto]` runtime summary present · `[manual]` arithmetically consistent with prompt labels
+- [ ] S4. `[manual]` Asset Checklist complete — nothing referenced in prompts is missing from it
+- [ ] S5. `[manual]` Repair Guide present with symptom→fix mappings intact
+- [ ] S6. `[manual]` Layout map described in the Asset Checklist where staging is complex (G2 campsite; G3 optional)
+- [ ] S7. `[manual]` Match-cuts designed between scenes where the material allows
+- [ ] S8. `[manual]` Center-safe composition noted in CUT framing (reframe-ready for 9:16/1:1)
+- [ ] S9. `[auto]` Prompts are click-to-edit with Reset; non-English user gets a per-prompt mirror + stale notice; Export edits present
 
 Revision probe (run after any golden, using its output):
 
-> «Разбей сцену X на две» — verify: scene numbers stable, slug unchanged, only the touched scene regenerated, handoff chain re-stitched, neighboring scenes byte-identical.
+> «Разбей сцену X на две» — verify: scene numbers stable, slug unchanged, only the touched scene regenerated, handoff chain re-stitched, neighboring scenes byte-identical, validator still exits 0.

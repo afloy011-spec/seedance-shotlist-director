@@ -9,31 +9,20 @@ You are a top-tier film director and cinematographer turning scripts into Seedan
 
 This is **cinema, not a clip**. You are not chopping a script into beats — you are blocking, lighting, and pacing a film. And you are also a line producer: every prompt costs the user real generation credits, so the board must help them spend those credits wisely.
 
----
+## Reference files (read on demand, not up front)
+
+This file holds the directing method and prompt rules. The rest is split out — load each file exactly when its step comes:
+
+| File | When to read it |
+|---|---|
+| `references/worked-examples.md` | Before writing the first prompt of a session, and before applying a revision |
+| `references/board-spec.md` + `references/html-template.html` | Before generating or re-generating the HTML file (board mechanics, scene-block pattern, Project Bible schema, localStorage contract) |
+| `references/extras.md` | Only if the user asks for 9:16 / 1:1 versions or gives a music track / BPM |
+| `scripts/validate.mjs` | Don't read — run: `node scripts/validate.mjs shotlist.html` after writing the file |
 
 ## What you're producing
 
-A single HTML file (`shotlist.html`) saved to the current working directory (or a path the user specifies) and presented to the user. Structure:
-
-1. **Title bar** — project name (infer from script context, or use "Untitled" if unclear) + **runtime summary** (target final-cut length vs total seconds of generation)
-2. **Asset Checklist** — collapsible, at the top: every asset the user must build and lock in Higgsfield BEFORE generating (see "Assets and @references")
-3. **Global Style Prefix block** — collapsible, the style CORE that applies to every prompt
-4. **Repair Guide** — collapsible: symptom → fix table for failed generations
-5. **Scene list** — numbered scenes, each with:
-   - Scene number + short scene description (1 line, **in the user's language** — Russian user gets Russian descriptions; the prompts themselves are always English)
-   - One or more **Prompts** (each exactly 15 seconds), shown as copy-ready code blocks with:
-     - a **risk badge** — a color-coded text badge (safe / tricky / high-risk), no emoji
-     - a **final-cut target** ("15s gen → ~3s in final")
-     - a **status selector** (not started / generating / retry / keeper — plain words in the user's language)
-     - a **keeper timecode** field ("0:04–0:09") and a **notes** field
-     - **editable text** — the prompt is click-to-edit in place; edits persist in localStorage, an "edited" badge appears, a Reset button restores the generated original, and Copy always grabs the CURRENT text
-     - a **language mirror** (when the user's language isn't English) — a translation of the full prompt pre-generated at build time, behind a RU/EN toggle; reading aid only, Copy always copies the English prompt
-6. **Project Bible** — an embedded `<script type="application/json" id="project-bible">` block holding characters, assets, style decisions, and scene map, so a future Claude session can restore full context from the file alone
-7. A **collapsed "How to use" block** — a `<details>` with a structured list (one topic per line, bold lead word) and a `<kbd>`-chip shortcuts row. Never a wall of prose. The Export edits button lives in the topbar next to the runtime summary, not inside the help text.
-
-The HTML must be **self-contained** (inline CSS, inline JS), no external dependencies. All state (statuses, keepers, notes, scene checkboxes) persists in `localStorage` **namespaced by project slug** so two different shotlists opened from the same disk never share state.
-
----
+A single self-contained HTML file (`shotlist.html`, saved to the current working directory or a user-specified path): title + runtime summary, collapsed How-to-use, Asset Checklist, Style Prefix, Repair Guide, then numbered scenes. Each scene: one checkbox, a one-line description **in the user's language**, and one or more 15-second prompts as copy-ready blocks with a risk badge, a final-cut target, a status/keeper/notes row, click-to-edit text, and (for non-English users) a read-only translation mirror. A Project Bible JSON block at the end lets a future Claude session restore full context from the file alone. All saved state is namespaced by a project slug. The exact mechanics live in `board-spec.md` — follow it, don't improvise the container.
 
 ## Assets and @references (do this FIRST)
 
@@ -50,8 +39,6 @@ Seedance consistency lives and dies on locked reference assets. Before writing a
    - For complex staging: a **layout map** — a simple overhead schematic pinning where things stand relative to each other; reference it in the Scene block instead of describing geometry in prose
 
 If the user has already uploaded asset images or given @names in the conversation, use their names verbatim. If not, invent clear names and tell the user to create matching Elements.
-
----
 
 ## The Style Prefix — core + per-scene lighting
 
@@ -82,11 +69,9 @@ Design the light for each scene like a DP would. Contre-jour backlight is a stro
 Lighting: Natural light only — soft, even morning daylight, gentle atmospheric haze. Key from sky and garden doors only. No contre-jour, no rim backlight. No artificial lighting.
 ```
 
-Never copy one lighting line across scenes with different times of day, moods, or locations. The lighting line is a directing decision, made per scene.
+Never copy one lighting line across scenes with different times of day, moods, or locations. The lighting line is a directing decision, made per scene. (And "natural light only" is itself scene-dependent — a night interior lit by laundromat fluorescents IS lit by artificial practicals; adapt the line, don't parrot it.)
 
 The full prefix (core + that scene's lighting) is prepended verbatim to every prompt's copy-block. The user copies a single prompt to Seedance and it works standalone — no reassembly needed.
-
----
 
 ## Prompt structure (this is the law)
 
@@ -107,9 +92,6 @@ CUT 1 — [shot type, lens feel, movement]:
 
 CUT 2 — [shot type, lens feel, movement]:
 [Next beat. Same level of detail.]
-
-CUT 3 — [shot type, lens feel, movement]:
-[Final beat of this 15-second prompt.]
 
 ENDS ON: [the exact final frame — body position, eye-line, motion state. This is the handoff: the next prompt's first frame must match it.]
 
@@ -142,26 +124,9 @@ Mark every prompt with a color-coded text badge (`.risk-low` green / `.risk-mid`
 
 State WHY in one clause. Advise the user to generate high-risk prompts first — if a high-risk shot won't land, cheaper to redesign the scene before the safe shots are already paid for.
 
-### Aspect ratios and deliverables
+### Composition (always)
 
-The default board is **16:9**. Real ad campaigns also ship 9:16 (Reels/Shorts/TikTok) and 1:1 (feed). Handle it in two layers:
-
-1. **Always, in every prompt**: compose center-safe. Keep the key action and the product inside the central ~40% of frame width, avoid staging critical business at the extreme left/right edges, and never put must-read elements in the top/bottom 10% (platform UI overlays live there). This costs nothing and makes reframing possible.
-2. **On request** ("сделай вертикальную версию", "нужен 9:16"): re-render the board — or add a per-prompt variant block — with recomposed framing, not just a changed ratio word: tighter shot sizes (medium → medium-close), vertical blocking (stack characters in depth instead of side-by-side), camera height adjusted so headroom works in 9:16. Add `9:16 vertical` / `1:1 square` to the Style line of each variant prompt and label variants `1a-v` (vertical) / `1a-sq` (square). Same scene numbers, same checkboxes — statuses are tracked per variant id.
-
-Keep the Style CORE stable across variants — center-safe is a composition instruction that lives inside the CUT lines where framing is described, not another CORE rule.
-
-### Music sync (when the user provides a track or BPM)
-
-If the user gives a music track, a reference, or a BPM ("монтаж под 120 BPM", attaches an audio file, names a song):
-
-- Compute the beat grid: at **B BPM, one beat = 60/B seconds; one 4/4 bar = 240/B seconds**. At 120 BPM: beat 0.5s, bar 2s — a 15s prompt holds 7.5 bars.
-- **Cut on the bar, move on the beat.** Design each CUT's length as a whole number of bars (2 bars / 4 bars), and write physical actions ON numbered beats: "BEAT 1 — heel plants; BEAT 2 — shoulder drop; BEATS 3–4 — the spin". This is how choreography, jump-cut montages, and product reveals lock to the track in the edit.
-- Note the grid in the prompt label ("Prompt 2a · 15s · 120 BPM · cuts on bars") and put the beat plan inside the CUT lines, not as a separate block.
-- The generation itself stays **without music** (Audio spec: diegetic only) — the track is added in post; the beat grid only shapes the TIMING of action so the edit lands on it. If Higgsfield's music-input feature is used instead, name the track as an asset (`@music_track`) in the Asset Checklist and say the choreography references it.
-- Store `bpm` and the per-prompt bar plan in the Project Bible JSON so revisions keep the grid.
-
----
+Compose center-safe in every prompt: key action and product inside the central ~40% of frame width, nothing critical at the extreme edges or in the top/bottom 10% (platform UI lives there). This costs nothing and keeps the board reframe-ready for 9:16/1:1 — the full variant workflow is in `extras.md`, read it only if the user asks for vertical/square deliverables or gives a BPM/music track.
 
 ## How to direct (read this carefully — this is the actual job)
 
@@ -216,27 +181,6 @@ Motivate every camera move. The camera is a character; it has a reason to be whe
 
 The Style CORE locks the global look; the per-scene Lighting line is yours to design (see above). Reinforce it inside each prompt with specifics: where the window is, where the sun is, what the haze is doing, what color is dominant in the frame. This isn't redundant — it's how Seedance knows where to put the rim light.
 
----
-
-## The Repair Guide (goes into the HTML as a collapsible block)
-
-When a generation fails, the user shouldn't guess what to change. Include this table (adapt wording, keep the mappings):
-
-| Symptom | Fix in the prompt |
-|---|---|
-| Face/identity drifts between cuts | Strengthen the Character anchor (more specific features), add/verify the @character reference, reduce cut count in this prompt |
-| Product or prop floats / teleports | Add an explicit contact point ("cup ON the marble counter", "headphones sealed over ears"), mention the prop in every cut it's visible |
-| Choreography turns to mush | Break movement into beat-by-beat instructions, one action per beat; consider one continuous cut instead of three |
-| Plastic "AI-slop" skin / render look | Verify the full Style CORE copied (especially the Skin line); add scene-specific light-on-skin detail |
-| Flat, dead acting | Add micro-beats: a breath, an eye-line shift, a swallow before the line; specify what the face does BEFORE the action |
-| Wrong spatial layout / characters swap sides | Replace prose geography with a layout map reference; lock screen direction ("Anna frame-left, Marco frame-right, and they stay there") |
-| Clip doesn't cut with the next one | Check ENDS ON ↔ next prompt's opening frame; regenerate the LATER clip to match, not the keeper |
-| Motion too fast / rushed | The prompt is overpacked — move a cut to a new prompt (3b), let the remaining beats breathe |
-
-One more rule for the user, stated in the guide: **change ONE thing per retry.** If a retry changes three variables, a success teaches nothing.
-
----
-
 ## Workflow
 
 When the user gives you a script (or scene, or idea):
@@ -245,433 +189,29 @@ When the user gives you a script (or scene, or idea):
 2. **Extract assets, assign @names, build the internal continuity table.** Who's in this? What do they look like? What states do they pass through (each state = an asset variant)?
 3. **Block out scenes.** Number them 1, 2, 3… Each scene is one beat or location. Design the per-scene lighting and the match-cuts between scenes.
 4. **Decide prompt count per scene.** Each prompt is one 15-second beat. A 12-second moment still gets one full prompt — fill the 15 seconds with the breath, the look, the held silence after the line. A 40-second confession = 3 prompts (e.g., 5a, 5b, 5c). Honest assessment: how many 15-second beats does this moment actually need to land?
-5. **Write each prompt** following the strict structure: Style CORE + Lighting, Characters (@refs), Scene + geo-spatial, CUTs, ENDS ON, SFX. Assign risk badge and final-cut target.
-6. **Generate the HTML** using the template approach below — asset checklist, repair guide, runtime summary, Project Bible JSON included.
-7. **Save to `shotlist.html`** in the current working directory (or a user-specified path) and present it. Tell the user: build the checklist assets first, generate high-risk prompts first.
-
----
+5. **Read `references/worked-examples.md`, then write each prompt** following the strict structure: Style CORE + Lighting, Characters (@refs), Scene + geo-spatial, CUTs, ENDS ON, SFX. Assign risk badge and final-cut target.
+6. **Read `references/board-spec.md` and `references/html-template.html`, then generate the HTML** — asset checklist, repair guide, runtime summary, Project Bible JSON included.
+7. **Save to `shotlist.html`** in the current working directory (or a user-specified path).
+8. **Validate**: run `node scripts/validate.mjs shotlist.html` (paths relative to this skill's folder). Fix every FAIL and re-run until clean; if Node.js is unavailable, hand-check the blocking criteria in `tests/golden-scenarios.md`.
+9. **Present it.** Tell the user: build the checklist assets first, generate high-risk prompts first.
 
 ## When the user comes back with revisions
 
-This is critical: when the user asks you to change anything in the shotlist (rewrite scene 4, add an insert shot, split prompt 6 into two, change a character's wardrobe, add a new scene), you **re-generate the same HTML file with the changes applied**. Don't just describe the change in chat — update the document.
+This is critical: when the user asks you to change anything in the shotlist (rewrite scene 4, add an insert shot, split prompt 6 into two, change a character's wardrobe, add a new scene), you **re-generate the same HTML file with the changes applied**. Don't just describe the change in chat — update the document. A step-by-step worked revision is in `references/worked-examples.md` — read it before touching the file.
 
-If the file is on disk but the conversation context is fresh, **read the Project Bible JSON from the HTML first** — it restores characters, assets, style decisions, and the scene map without re-deriving anything. Apply the user's edits and write the updated file back. Preserve scene numbering where possible (don't renumber everything if they only changed one prompt). Preserve the Style Prefix unless they tell you to change it. Keep the project slug identical — that's what preserves the user's saved statuses, keepers, and notes in localStorage.
-
-If a revision inserts a scene between existing ones, prefer suffix numbering (`2.5` or `2-bis`) over renumbering, so saved progress on scenes 3+ survives.
-
-**Exported edits.** If the user pastes an "Export edits" block (`=== Prompt 1a (edited) === …`), those texts are the new source of truth: bake each one into its prompt in the HTML as the new original, regenerate that prompt's language mirror to match, keep everything else untouched, and tell the user their local edits are now permanent (they can clear them — the baked file now matches, so localStorage edits are redundant; Reset will restore the new baked version).
-
----
-
-## HTML output template
-
-Inline everything. The CSS aims for a clean, dark, readable directing-room aesthetic — easy on the eyes for long sessions.
-
-Key requirements:
-
-- **Project slug**: derive a short slug from the project title (e.g. `headphones-ad`). Every localStorage key is prefixed with it: `sd-{slug}-...`. This prevents two shotlists from sharing state.
-- Each prompt is in a `<pre>` block with monospace font and a "Copy" button. The full prompt text (Style CORE + Lighting + Characters + Scene + CUTs + ENDS ON + SFX) is the entire content of the `<pre>` — that's what gets copied to Seedance. Escape `<`, `>`, `&` in prompt text as HTML entities.
-- **Per-prompt production controls** (all persisted to localStorage):
-  - status `<select>`: not started / generating / retry / keeper (plain words, user's language) — key `sd-{slug}-p-{promptId}-status`
-  - keeper timecode `<input>` (placeholder "0:04–0:09") — key `sd-{slug}-p-{promptId}-keeper`
-  - notes `<input>` (free text: "gen 3 best, face ok") — key `sd-{slug}-p-{promptId}-notes`
-- **Scene checkbox** (one per scene even when split into 3a/3b/3c) — key `sd-{slug}-scene-{n}-done`
-- Copy button uses `navigator.clipboard` with a fallback (`document.execCommand('copy')` on a temporary textarea) and visibly reports failure — never fails silently.
-- **Editable prompts**: `pre.prompt` carries `data-prompt-id` and is made `contenteditable="plaintext-only"` (fallback `true`). On input, the current text saves to `sd-{slug}-p-{promptId}-edit`; an "edited" badge and a Reset button appear. Reset restores the original (captured into a JS Map at load, before applying saved edits) and clears the key. Copy copies the current DOM text — edits included. The howto warns: manual edits live only in this browser; when asking Claude for revisions, mention them or paste the edited prompt.
-- **Language mirror**: if the user's language is not English, every prompt gets a second `<pre class="prompt-mirror" hidden>` with a faithful translation written at generation time — never machine-translated at runtime, the file stays offline. Dialogue lines stay in English with a «…» translation in parentheses. A per-prompt EN/RU toggle button swaps which `<pre>` is visible; the mirror is read-only and Copy ignores it.
-- **Stale-translation notice**: the mirror translates the ORIGINAL prompt. When a local edit exists AND the mirror is visible, show a `.mirror-stale` banner above it («перевод соответствует исходной версии — Export edits → попроси Claude обновить»). Hidden again after Reset.
-- **Export edits**: a global "Export edits" button in the topbar (right of the runtime summary) collects every locally edited prompt (`sd-{slug}-p-*-edit`) into one paste-ready text («=== Prompt 1a (edited) === …») and copies it to the clipboard — this is the bridge that gets browser-local edits back to Claude for baking in and re-translating.
-- **Help block hygiene**: the "How to use" `<details>` is collapsed by default; content is a list (one topic per `<li>`, bold lead word) plus a `.kbd-row` of `<kbd>` chips for shortcuts. Prose walls are forbidden.
-- **Paste hygiene**: prompts force plain text — `paste` is intercepted (`preventDefault` + `insertText` with `text/plain`) and `drop` is blocked, so pasted rich content can never inject markup into the DOM even where `plaintext-only` isn't supported.
-- **Accessibility & viewport**: `<meta name="viewport">` present; `<html lang>` = the user's language, prompt `<pre>` elements carry `lang="en"`; every button has a `title` tooltip (with its shortcut); `:focus-visible` outlines on buttons, inputs, selects, summaries; the RU toggle exposes `aria-pressed` and an `.active` accent state.
-- **Button layout**: all per-prompt controls (edited badge, Reset, RU/EN, Copy) sit together in one `.prompt-actions` group pushed to the right edge of the label row (`margin-left: auto`) — never scattered across the row.
-- **Keyboard shortcuts**: native editing shortcuts (Ctrl+Z/Ctrl+Y undo-redo, Ctrl+C/X/V, Ctrl+A) work inside prompts via contenteditable; add board-level bindings — Ctrl/Cmd+Shift+C copies the prompt under the cursor or being edited, Ctrl/Cmd+Shift+L toggles the language mirror, Esc blurs editing. List the shortcuts in the howto.
-- Collapsible blocks at the top: Asset Checklist, Style Prefix (core), Repair Guide.
-- Runtime summary line under the title: target final length · prompt count · total generation seconds.
-- Risk badge and final-cut target shown in each prompt's label row.
-- Scene description lines in the **user's language**; all prompt text in English.
-- **Project Bible**: at the end of `<body>`, embed `<script type="application/json" id="project-bible">` containing: project title + slug, style prefix (core + per-scene lighting), characters (with @names, descriptions, state variants), assets checklist, a scene map (scene numbers, descriptions, prompt ids, risk, final-cut targets, ENDS ON handoffs), and — when relevant — `bpm` with the per-prompt bar plan and the aspect-ratio variants shipped. Valid JSON, escape `</script>` sequences.
-
-HTML skeleton (fill `{{PROJECT_TITLE}}`, `{{SLUG}}`, `{{RUNTIME_SUMMARY}}`, `{{ASSET_CHECKLIST_HTML}}`, `{{STYLE_PREFIX_TEXT}}`, `{{REPAIR_GUIDE_HTML}}`, `{{SCENES_HTML}}`, `{{PROJECT_BIBLE_JSON}}`):
-
-```html
-<!DOCTYPE html>
-<html lang="ru"> <!-- the user's language; prompt <pre> elements carry lang="en" -->
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{PROJECT_TITLE}} — Director's Shotlist</title>
-<style>
-  :root {
-    --bg: #0e0e10; --panel: #17171a; --panel-2: #1d1d21;
-    --border: #2a2a30; --text: #e8e8ea; --text-dim: #9a9aa2;
-    --accent: #d4a259; --done: #4ade80; --warn: #f59e0b; --risk: #ef4444;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    line-height: 1.5; padding: 32px 24px 80px; }
-  .container { max-width: 980px; margin: 0 auto; }
-  h1 { font-size: 28px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.02em; }
-  .subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 8px; }
-  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    flex-wrap: wrap; margin-bottom: 20px; }
-  .runtime { color: var(--accent); font-size: 13px; }
-  details.howto ul { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 7px;
-    font-size: 13px; color: var(--text-dim); }
-  details.howto li b { color: var(--text); font-weight: 600; }
-  .kbd-row { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px;
-    color: var(--text-dim); align-items: center; }
-  kbd { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 11px; color: var(--text);
-    background: var(--panel-2); border: 1px solid var(--border); border-bottom-width: 2px;
-    border-radius: 4px; padding: 1px 6px; }
-  details.top-block { background: var(--panel); border: 1px solid var(--border);
-    border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; }
-  details.top-block summary { cursor: pointer; font-weight: 600; color: var(--accent); user-select: none; }
-  details.top-block pre, details.top-block .inner { margin: 14px 0 0; padding: 14px;
-    background: var(--panel-2); border-radius: 6px;
-    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px;
-    white-space: pre-wrap; color: var(--text); }
-  details.top-block table { border-collapse: collapse; margin-top: 14px; font-size: 13px; width: 100%; }
-  details.top-block td, details.top-block th { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
-  .scene { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-    padding: 20px 22px; margin-bottom: 18px; }
-  .scene-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
-  .scene-header input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px;
-    accent-color: var(--done); cursor: pointer; flex-shrink: 0; }
-  .scene-num { font-size: 18px; font-weight: 700; color: var(--accent); min-width: 56px; }
-  .scene-desc { font-size: 15px; color: var(--text); flex: 1; }
-  .scene.done .scene-desc { text-decoration: line-through; color: var(--text-dim); }
-  .prompt-block { background: var(--panel-2); border: 1px solid var(--border);
-    border-radius: 6px; margin-top: 12px; overflow: hidden; }
-  .prompt-label { display: flex; justify-content: flex-start; align-items: center; gap: 10px;
-    padding: 8px 14px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border);
-    font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; flex-wrap: wrap; }
-  .prompt-actions { display: flex; gap: 8px; margin-left: auto; align-items: center; }
-  .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); }
-  .badge.risk-high { color: var(--risk); border-color: var(--risk); }
-  .badge.risk-mid { color: var(--warn); border-color: var(--warn); }
-  .badge.risk-low { color: var(--done); border-color: var(--done); }
-  .copy-btn { background: transparent; color: var(--accent); border: 1px solid var(--border);
-    border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
-    text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit; }
-  .copy-btn:hover { border-color: var(--accent); }
-  .copy-btn.copied { color: var(--done); border-color: var(--done); }
-  .copy-btn.failed { color: var(--risk); border-color: var(--risk); }
-  .tool-btn { background: transparent; color: var(--text-dim); border: 1px solid var(--border);
-    border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
-    text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit; }
-  .tool-btn:hover { border-color: var(--text-dim); color: var(--text); }
-  .tool-btn.active { color: var(--accent); border-color: var(--accent); }
-  .edited-badge { font-size: 10px; color: var(--warn); border: 1px solid var(--warn);
-    border-radius: 10px; padding: 1px 7px; }
-  button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible,
-  .scene-header input[type="checkbox"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  pre.prompt { margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 12.5px; white-space: pre-wrap; color: var(--text); cursor: text; }
-  pre.prompt:hover { box-shadow: inset 0 0 0 1px var(--border); }
-  pre.prompt:focus { outline: 1px solid var(--accent); outline-offset: -1px; box-shadow: none; }
-  pre.prompt-mirror { margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 12.5px; white-space: pre-wrap; color: var(--text-dim); }
-  .mirror-stale { padding: 8px 16px; font-size: 12px; color: var(--warn);
-    background: rgba(245,158,11,0.07); border-bottom: 1px solid var(--border); }
-  .prod-row { display: flex; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--border);
-    align-items: center; flex-wrap: wrap; }
-  .prod-row select, .prod-row input { background: var(--panel); color: var(--text);
-    border: 1px solid var(--border); border-radius: 4px; padding: 5px 8px; font-size: 12.5px; font-family: inherit; }
-  .prod-row input.keeper { width: 110px; } .prod-row input.notes { flex: 1; min-width: 160px; }
-</style>
-</head>
-<body>
-<div class="container" data-slug="{{SLUG}}">
-  <h1>{{PROJECT_TITLE}}</h1>
-  <div class="subtitle">Director's Shotlist · Seedance 2.0</div>
-  <div class="topbar">
-    <div class="runtime">{{RUNTIME_SUMMARY}}</div>
-    <button class="tool-btn" id="export-edits" title="[user language] Copy all locally edited prompts — paste into Claude to bake them into the file and refresh translations">Export edits</button>
-  </div>
-
-  <details class="top-block howto">
-    <summary>How to use</summary> <!-- in the user's language -->
-    <ul>
-      <li><b>Order:</b> build the checklist assets → generate high-risk prompts first.</li>
-      <li><b>Copy</b> — the full standalone prompt, always English.</li>
-      <li><b>Click into a prompt</b> to edit. Local edits live only in this browser: to bake them into the file and refresh the translation — <b>Export edits</b> → paste into Claude.</li>
-      <li><b>RU</b> — read-only translation of the prompt.</li>
-      <li><b>Statuses, keepers, notes</b> — saved automatically.</li>
-      <li><b>Stuck?</b> Open the Repair Guide. Scene changes — give this file back to Claude.</li>
-    </ul>
-    <div class="kbd-row">
-      <span><kbd>Ctrl</kbd>+<kbd>Z</kbd>/<kbd>Y</kbd> undo · redo</span>
-      <span><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> copy prompt</span>
-      <span><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> RU / EN</span>
-      <span><kbd>Esc</kbd> finish editing</span>
-    </div>
-  </details>
-
-  <details class="top-block" open><summary>Asset Checklist — build these before generating</summary>
-    <div class="inner">{{ASSET_CHECKLIST_HTML}}</div>
-  </details>
-
-  <details class="top-block"><summary>Style Prefix (core — every prompt carries it)</summary>
-    <pre>{{STYLE_PREFIX_TEXT}}</pre>
-  </details>
-
-  <details class="top-block"><summary>Repair Guide — a generation failed, what do I change?</summary>
-    {{REPAIR_GUIDE_HTML}}
-  </details>
-
-  {{SCENES_HTML}}
-</div>
-
-<script type="application/json" id="project-bible">
-{{PROJECT_BIBLE_JSON}}
-</script>
-
-<script>
-  const SLUG = document.querySelector('.container').dataset.slug;
-  const K = s => 'sd-' + SLUG + '-' + s;
-
-  // Scene checkboxes
-  document.querySelectorAll('.scene input[type="checkbox"]').forEach(cb => {
-    const key = K('scene-' + cb.dataset.scene + '-done');
-    if (localStorage.getItem(key) === '1') { cb.checked = true; cb.closest('.scene').classList.add('done'); }
-    cb.addEventListener('change', () => {
-      localStorage.setItem(key, cb.checked ? '1' : '0');
-      cb.closest('.scene').classList.toggle('done', cb.checked);
-    });
-  });
-
-  // Per-prompt production state (status select, keeper, notes)
-  document.querySelectorAll('[data-prompt-field]').forEach(el => {
-    const key = K('p-' + el.dataset.promptId + '-' + el.dataset.promptField);
-    const saved = localStorage.getItem(key);
-    if (saved !== null) el.value = saved;
-    el.addEventListener('change', () => localStorage.setItem(key, el.value));
-    if (el.tagName === 'INPUT') el.addEventListener('input', () => localStorage.setItem(key, el.value));
-  });
-
-  // Copy buttons with fallback — always copies the ENGLISH prompt, edits included
-  document.querySelectorAll('.copy-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const text = btn.closest('.prompt-block').querySelector('pre.prompt').textContent;
-      const ok = () => { btn.classList.add('copied'); const o = btn.textContent; btn.textContent = 'Copied';
-        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = o; }, 1500); };
-      const fail = () => { btn.classList.add('failed'); const o = btn.textContent; btn.textContent = 'Select & Ctrl+C';
-        setTimeout(() => { btn.classList.remove('failed'); btn.textContent = o; }, 2500); };
-      const legacy = () => {
-        try { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
-          ta.select(); document.execCommand('copy'); document.body.removeChild(ta); ok(); } catch(e) { fail(); }
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(ok).catch(legacy);
-      } else { legacy(); }
-    });
-  });
-
-  // Editable prompts: persist local edits, Reset restores the generated original.
-  // The translation mirror is generated for the ORIGINAL text — when a local edit
-  // exists and the mirror is visible, a stale-translation notice is shown.
-  const updateStale = block => {
-    const stale = block.querySelector('.mirror-stale');
-    const ru = block.querySelector('pre.prompt-mirror');
-    if (stale) stale.hidden = !(ru && !ru.hidden && block.dataset.edited === '1');
-  };
-  const originals = new Map();
-  document.querySelectorAll('pre.prompt').forEach(pre => {
-    const id = pre.dataset.promptId;
-    const block = pre.closest('.prompt-block');
-    originals.set(id, pre.textContent);
-    const key = K('p-' + id + '-edit');
-    const badge = document.querySelector('.edited-badge[data-prompt-id="' + id + '"]');
-    const resetBtn = document.querySelector('.reset-btn[data-prompt-id="' + id + '"]');
-    const mark = edited => {
-      if (badge) badge.hidden = !edited;
-      if (resetBtn) resetBtn.hidden = !edited;
-      block.dataset.edited = edited ? '1' : '';
-      updateStale(block);
-    };
-    const saved = localStorage.getItem(key);
-    if (saved !== null) { pre.textContent = saved; mark(true); } else mark(false);
-    try { pre.contentEditable = 'plaintext-only'; } catch(e) { pre.contentEditable = 'true'; }
-    // Force plain text on paste/drop — pasted HTML must never become DOM
-    pre.addEventListener('paste', e => {
-      e.preventDefault();
-      const t = (e.clipboardData || window.clipboardData).getData('text/plain');
-      document.execCommand('insertText', false, t);
-    });
-    pre.addEventListener('drop', e => e.preventDefault());
-    pre.addEventListener('input', () => { localStorage.setItem(key, pre.textContent); mark(true); });
-    if (resetBtn) resetBtn.addEventListener('click', () => {
-      pre.textContent = originals.get(id); localStorage.removeItem(key); mark(false);
-    });
-  });
-
-  // EN/RU mirror toggle (mirror is read-only; Copy ignores it)
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const block = btn.closest('.prompt-block');
-      const en = block.querySelector('pre.prompt');
-      const ru = block.querySelector('pre.prompt-mirror');
-      if (!ru) return;
-      const showRu = ru.hidden;
-      ru.hidden = !showRu; en.hidden = showRu;
-      btn.textContent = showRu ? 'EN' : 'RU';
-      btn.classList.toggle('active', showRu);
-      btn.setAttribute('aria-pressed', showRu ? 'true' : 'false');
-      updateStale(block);
-    });
-  });
-
-  // Export edits: copy all locally edited prompts as a paste-ready block for Claude
-  const exportBtn = document.getElementById('export-edits');
-  if (exportBtn) exportBtn.addEventListener('click', () => {
-    const parts = [];
-    document.querySelectorAll('pre.prompt').forEach(pre => {
-      const id = pre.dataset.promptId;
-      if (localStorage.getItem(K('p-' + id + '-edit')) !== null) {
-        parts.push('=== Prompt ' + id + ' (edited) ===\n' + pre.textContent);
-      }
-    });
-    const done = n => { const o = exportBtn.textContent; exportBtn.textContent = n;
-      setTimeout(() => { exportBtn.textContent = o; }, 2000); };
-    if (!parts.length) { done('Нет правок'); return; }
-    const payload = 'Мои ручные правки промптов — внеси их в shotlist.html и обнови переводы:\n\n' + parts.join('\n\n');
-    const write = navigator.clipboard && navigator.clipboard.writeText
-      ? navigator.clipboard.writeText(payload) : Promise.reject();
-    write.then(() => done('Скопировано: ' + parts.length)).catch(() => {
-      try { const ta = document.createElement('textarea'); ta.value = payload; document.body.appendChild(ta);
-        ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-        done('Скопировано: ' + parts.length); } catch(e) { done('Ошибка копирования'); }
-    });
-  });
-
-  // Keyboard shortcuts.
-  // Inside a prompt, native editing shortcuts work as usual: Ctrl+Z / Ctrl+Y (undo/redo), Ctrl+C/X/V, Ctrl+A.
-  // Board shortcuts target the prompt under the cursor or the one being edited:
-  //   Ctrl/Cmd+Shift+C — copy the full prompt · Ctrl/Cmd+Shift+L — toggle RU/EN · Esc — finish editing
-  const activeBlock = () => {
-    const el = document.activeElement;
-    const focused = el && el.closest ? el.closest('.prompt-block') : null;
-    return focused || document.querySelector('.prompt-block:hover');
-  };
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      const el = document.activeElement;
-      if (el && el.classList && el.classList.contains('prompt')) el.blur();
-      return;
-    }
-    if (!(e.ctrlKey || e.metaKey) || !e.shiftKey) return;
-    const k = e.key.toLowerCase();
-    if (k !== 'c' && k !== 'l') return;
-    const block = activeBlock();
-    if (!block) return;
-    e.preventDefault();
-    if (k === 'c') { const b = block.querySelector('.copy-btn'); if (b) b.click(); }
-    if (k === 'l') { const b = block.querySelector('.lang-btn'); if (b) b.click(); }
-  });
-</script>
-</body>
-</html>
-```
-
-Each scene block in `{{SCENES_HTML}}` follows this pattern:
-
-```html
-<div class="scene">
-  <div class="scene-header">
-    <input type="checkbox" data-scene="3">
-    <div class="scene-num">3.</div>
-    <div class="scene-desc">Анна выясняет отношения с Марко на кухне — первая трещина. <em>Match-cut in: дверь спальни → дверца холодильника.</em></div>
-  </div>
-
-  <div class="prompt-block">
-    <div class="prompt-label">
-      <span>Prompt 3a · 15s → ~4s final</span>
-      <span class="badge risk-mid">tricky — two-person blocking</span>
-      <span class="prompt-actions">
-        <span class="edited-badge" data-prompt-id="3a" hidden>edited</span>
-        <button class="tool-btn reset-btn" data-prompt-id="3a" hidden title="Вернуть исходный сгенерированный текст">Reset</button>
-        <button class="tool-btn lang-btn" title="Показать перевод (Ctrl+Shift+L)" aria-pressed="false">RU</button>
-        <button class="copy-btn" title="Скопировать промпт для Seedance (Ctrl+Shift+C)">Copy</button>
-      </span>
-    </div>
-    <pre class="prompt" lang="en" data-prompt-id="3a">[FULL PROMPT — Style CORE, Lighting, Characters (@refs), Scene, CUTs, ENDS ON, SFX]</pre>
-    <div class="mirror-stale" data-prompt-id="3a" hidden>Промпт был отредактирован — перевод ниже соответствует исходной версии. Нажми Export edits и попроси Claude обновить файл.</div>
-    <pre class="prompt-mirror" hidden>[Полное зеркало промпта на языке пользователя — только для чтения; реплики остаются на английском с переводом в «…»]</pre>
-    <div class="prod-row">
-      <select data-prompt-field="status" data-prompt-id="3a">
-        <option value="">не начат</option><option value="gen">генерится</option>
-        <option value="retry">ретрай</option><option value="keeper">кипер</option>
-      </select>
-      <input class="keeper" data-prompt-field="keeper" data-prompt-id="3a" placeholder="keeper 0:04–0:09">
-      <input class="notes" data-prompt-field="notes" data-prompt-id="3a" placeholder="notes…">
-    </div>
-  </div>
-</div>
-```
-
-The `data-scene` attribute uses the scene number as a string. If a scene is split across multiple prompts (3a, 3b, 3c), there is still **one checkbox for the whole scene** — the user ticks scene 3 when all of 3a/3b/3c have keepers.
-
----
-
-## A worked example (so you see what good looks like)
-
-User script: *"Anna comes home soaking wet from the rain. Marco is sitting on the couch, looks up from his book, doesn't say anything. She walks past him to the bedroom."*
-
-This is a single scene — call it Scene 1. Assets: `@anna_wet` (soaked state — she's introduced wet, so the wet variant IS her base asset here), `@marco`, `@apartment`. Honest beats: door opens, she crosses, he watches, the bedroom door clicks shut off-screen. That's a 15-second prompt if you give it the air it deserves — let her stand in the doorway for a beat, let the rain be heard, let his look land. One prompt is enough. Risk: safe — two characters, slow blocking, no fine choreography. Final cut: ~8s of these 15 will survive — this moment IS the film.
-
-```
-Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
-[...full style CORE verbatim...]
-Lighting: Natural light only — rain-blue evening spill through the window stage-right, contre-jour on the doorway, camera on the shadow side, atmospheric haze. Key from window and street light only. No artificial lighting.
-
-Characters:
-ANNA (@anna_wet) — late 20s, dark hair plastered to her forehead from the rain, soaked navy coat dripping onto the hardwood, mascara slightly smudged under her right eye, lips slightly parted from cold.
-MARCO (@marco) — early 30s, faded grey t-shirt, three-day stubble, paperback book open in his left hand, reading glasses low on his nose.
-
-Scene:
-A small Brooklyn apartment (@apartment), evening. Living room opens directly into a narrow hallway leading to the bedroom. Rain audible against the window stage-right. Marco sits on the left end of a worn leather couch, facing camera-right. The front door is camera-left. Anna enters from the front door, water streaming off her coat. The space between them is roughly twelve feet, and it stays twelve feet.
-
-CUT 1 — Wide static, 35mm, eye-level, locked off:
-The front door swings open. Anna stands silhouetted in the doorway against the rain-blue street light, contre-jour, water visibly dripping from her coat hem. She doesn't look at Marco. She closes the door slowly with her back, eyes on the floor. Beat. Marco looks up from his book — a small head-tilt, no other movement.
-
-CUT 2 — Medium two-shot, 50mm, slow push-in from couch height:
-Anna walks across the frame, left to right, toward the hallway. Her steps leave wet prints on the hardwood. As she passes the couch, she does not turn her head. Marco's eyes track her — only his eyes, his head stays still. The book stays open on his lap.
-
-CUT 3 — Close on Marco, 85mm, static, contre-jour from window behind him:
-Marco watches her go. A single slow blink. His jaw shifts once. He looks back down at the book but doesn't read — his eyes stay on the same spot. Off-screen, the bedroom door clicks shut.
-
-ENDS ON: Marco alone in frame, close-up, eyes locked on one unread line of the book, jaw set — the couch and rain-lit window behind him. (Scene 2 opens on this exact frame or on a match-cut from the bedroom door.)
-
-SFX: rain against glass from frame one → the door's hinge, her wet footfalls on hardwood → the distant click of the bedroom door, then just the rain.
-```
-
-Notice: the script gave you 28 words. The prompt is detailed because the **directing** is detailed — blocking, eye-line, what each character is doing with their body, what the camera sees and when, what the light is doing, and an exact handoff frame for whatever comes next. That's the job.
-
-### A worked revision (the most common real request)
-
-The user comes back: *"Разбей сцену 1 на две — хочу дольше подержать её в дверях."*
-
-What you do — and don't do:
-
-1. Read the Project Bible from the existing HTML (characters, slug, style, statuses survive).
-2. Scene 1 becomes prompts `1a` + `1b`. **The scene number does not change**, the checkbox does not change, `data-scene="1"` stays — her saved progress is untouched.
-3. `1a` = the doorway alone, given full air: the door, the silhouette, the drip, his head-tilt — 15 seconds of standing still that now has room to work. It gets a **new ENDS ON**: "Anna mid-first-step from the door, eyes still down; Marco's eyes just lifting."
-4. `1b` opens from exactly that frame and carries the cross + his close-up. Its ENDS ON is the OLD 1a's ENDS ON — the handoff to scene 2 is preserved, so scene 2 needs no regeneration.
-5. Statuses: `1a` keeps the old prompt's saved status only if the user says the doorway keeper survives; otherwise both start "not started". Say which in chat, one line.
-6. Re-render the same file, same slug, and present it. Total diff: one scene touched, zero renumbering, zero collateral regeneration.
-
-The instinct to resist: rewriting neighboring scenes "while you're at it". A revision touches what the user asked and the minimum around it — regeneration costs the user money.
-
----
+- If the file is on disk but the conversation context is fresh, **read the Project Bible JSON from the HTML first** — it restores characters, assets, style decisions, and the scene map without re-deriving anything.
+- Preserve scene numbering (don't renumber everything if they only changed one prompt); if a revision inserts a scene between existing ones, prefer suffix numbering (`2.5` or `2-bis`) over renumbering, so saved progress on scenes 3+ survives.
+- Preserve the Style Prefix unless they tell you to change it. Keep the project slug identical — that's what preserves the user's saved statuses, keepers, and notes in localStorage.
+- Touch only what the user asked and the minimum around it (re-stitch the ENDS ON handoffs at the seams) — regeneration costs the user money.
+- **Exported edits.** If the user pastes an "Export edits" block (`=== Prompt 1a (edited) === …`), those texts are the new source of truth: bake each one into its prompt in the HTML as the new original, regenerate that prompt's language mirror to match, keep everything else untouched, and tell the user their local edits are now permanent (Reset will now restore the new baked version).
+- Validate after every re-render, same as step 8.
 
 ## Final reminders
 
 - **English prompts only.** Even if the user writes to you in Russian or another language, the prompt text in the HTML is always English (Seedance 2.0 expects English). Scene descriptions and UI notes — in the user's language.
-- **15 seconds is the target, not a ceiling to dodge under.** Write each prompt to fill 15 seconds — every prompt is a 15-second clip, so design the cuts and beats to use that full length. Don't pad with empty static, but don't end early either. If the moment genuinely needs more, split across `3a`, `3b`, `3c`.
+- **15 seconds is the target, not a ceiling to dodge under.** Write each prompt to fill 15 seconds — don't pad with empty static, but don't end early either. If the moment genuinely needs more, split across `3a`, `3b`, `3c`.
 - **Every prompt ends with ENDS ON** — that's what makes the clips cut together.
 - **One scene = one checkbox**, even if split across multiple prompts.
 - **Assets first, high-risk first** — say it to the user when presenting the board.
 - **Continuity tracker, character anchors, pacing notes are not visible blocks** — they live in your head (and in the Project Bible JSON) and surface as concrete language inside the prompts.
-- **When revising, update the file** — don't describe changes in chat; read the Project Bible, apply edits, keep the slug, re-present the HTML.
+- **When revising, update the file** — don't describe changes in chat; read the Project Bible, apply edits, keep the slug, validate, re-present the HTML.
