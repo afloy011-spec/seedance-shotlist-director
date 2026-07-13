@@ -8,26 +8,50 @@ Read this file together with `html-template.html` every time you generate or re-
 2. **How to use** — a collapsed `<details class="top-block howto">`: a `<ul>` list (one topic per `<li>`, bold lead word) plus a `.kbd-row` of `<kbd>` chips. Never a wall of prose. Written in the user's language.
 3. **Asset Checklist** — `<details class="top-block" open>`: every asset to build in Higgsfield BEFORE generating. Each asset is an `.asset-item` block: a head row (@name in monospace accent + a one-line build note in the user's language + a Copy button) and a `<pre class="asset-prompt">` with the copy-ready English generation prompt (patterns in `asset-prompts.md`):
 
+   Single-prompt asset (locations, props, diagrams):
+
    ```html
    <div class="asset-list">
      <div class="asset-item">
-       <div class="asset-head"><b>@vera</b><span>героиня — сплит-лист (вариант A)</span>
+       <div class="asset-head"><b>@yard</b><span>локация — подъезд с тёплым светом</span>
          <span class="prompt-actions">
-           <span class="edited-badge" data-asset-id="vera-sheet" hidden>edited</span>
-           <button class="tool-btn reset-btn" data-asset-id="vera-sheet" hidden title="Вернуть исходный текст">Reset</button>
+           <span class="edited-badge" data-asset-id="yard" hidden>edited</span>
+           <button class="tool-btn reset-btn" data-asset-id="yard" hidden title="Вернуть исходный текст">Reset</button>
            <button class="tool-btn lang-btn" title="Показать перевод (Ctrl+Shift+L)" aria-pressed="false">RU</button>
            <button class="copy-btn" title="Скопировать промпт генерации ассета (Ctrl+Shift+C)">Copy</button>
          </span>
        </div>
-       <pre class="asset-prompt" lang="en" data-asset-id="vera-sheet">Split-frame character sheet, plain solid grey background. LEFT panel: ...</pre>
-       <div class="mirror-stale" data-asset-id="vera-sheet" hidden>Промпт был отредактирован — перевод соответствует исходной версии.</div>
+       <pre class="asset-prompt" lang="en" data-asset-id="yard">Night exterior, 3/4 angle with depth: ...</pre>
+       <div class="mirror-stale" data-asset-id="yard" hidden>Промпт был отредактирован — перевод соответствует исходной версии.</div>
        <pre class="prompt-mirror" hidden>[перевод на язык пользователя]</pre>
      </div>
-     ...
    </div>
    ```
 
-   Asset prompts are plain generation prompts — no Style CORE, no status row. They ARE first-class citizens of the editing machinery: `data-asset-id` (unique, kebab, no @), click-to-edit with Reset, a language mirror when the user's language isn't English, inclusion in Export edits (`=== Asset vera-sheet (edited) ===`). **Characters ship two asset-items each**: variant A — split-frame sheet, variant B — Higgsfield AI Cast card (ids `{name}-sheet` / `{name}-cast`, patterns in `asset-prompts.md`).
+   **Characters are ONE asset-item with variant tabs** — two ways to build the same person, shown one at a time (`{name}-sheet` / `{name}-cast`, patterns in `asset-prompts.md`):
+
+   ```html
+   <div class="asset-item">
+     <div class="asset-head"><b>@vera</b><span>героиня — один ассет, два способа собрать</span></div>
+     <div class="variant-tabs">
+       <button class="variant-tab active" data-variant="vera-sheet">Вариант A · Сплит-лист (GPT Image / Soul)</button>
+       <button class="variant-tab" data-variant="vera-cast">Вариант B · AI Cast карточка</button>
+     </div>
+     <div class="asset-variant" data-variant="vera-sheet">
+       <div class="variant-bar"><span>подсказка варианта</span>
+         <span class="prompt-actions">[edited-badge / reset-btn / lang-btn / copy-btn — как выше, data-asset-id="vera-sheet"]</span>
+       </div>
+       <pre class="asset-prompt" lang="en" data-asset-id="vera-sheet">Split-frame character sheet, ...</pre>
+       <div class="mirror-stale" data-asset-id="vera-sheet" hidden>...</div>
+       <pre class="prompt-mirror" hidden>...</pre>
+     </div>
+     <div class="asset-variant" data-variant="vera-cast" hidden>
+       [то же для AI Cast карточки, data-asset-id="vera-cast"]
+     </div>
+   </div>
+   ```
+
+   Asset prompts are plain generation prompts — no Style CORE, no status row. They ARE first-class citizens of the editing machinery: `data-asset-id` (unique, kebab, no @), click-to-edit with Reset, a language mirror when the user's language isn't English, inclusion in Export edits (`=== Asset vera-sheet (edited) ===`). Identity anchors (the same mole, the same wardrobe) must match across a character's variants.
 4. **Style Prefix (core)** — collapsible `<pre>`.
 5. **Repair Guide** — collapsible symptom→fix table (content below).
 6. **Scene list** — pattern below.

@@ -52,6 +52,14 @@
   .asset-head .prompt-actions { margin-left: auto; }
   pre.asset-prompt { margin: 0; padding: 10px 12px; background: var(--bg); border-radius: 6px;
     font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; white-space: pre-wrap; color: var(--text); }
+  .variant-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .variant-tab { background: transparent; color: var(--text-dim); border: 1px solid var(--border);
+    border-radius: 14px; padding: 4px 12px; font-size: 11.5px; cursor: pointer; font-family: inherit; }
+  .variant-tab:hover { color: var(--text); border-color: var(--text-dim); }
+  .variant-tab.active { color: var(--accent); border-color: var(--accent); background: rgba(212,162,89,0.08); }
+  .variant-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 12px;
+    color: var(--text-dim); flex-wrap: wrap; }
+  .variant-bar .prompt-actions { margin-left: auto; }
   .scene { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
     padding: 20px 22px; margin-bottom: 18px; }
   .scene-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
@@ -173,7 +181,7 @@
   // Serves both scene prompts (.prompt-block pre.prompt) and asset prompts (.asset-item pre.asset-prompt).
   document.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const scope = btn.closest('.prompt-block') || btn.closest('.asset-item');
+      const scope = btn.closest('.prompt-block, .asset-variant, .asset-item');
       const pre = scope && scope.querySelector('pre.prompt, pre.asset-prompt');
       if (!pre) return;
       const text = pre.textContent;
@@ -206,7 +214,7 @@
     const id = isAsset ? pre.dataset.assetId : pre.dataset.promptId;
     const attr = isAsset ? 'data-asset-id' : 'data-prompt-id';
     const storeId = (isAsset ? 'a-' : 'p-') + id;
-    const block = pre.closest(isAsset ? '.asset-item' : '.prompt-block');
+    const block = pre.closest(isAsset ? '.asset-variant, .asset-item' : '.prompt-block');
     originals.set(storeId, pre.textContent);
     const key = K(storeId + '-edit');
     const badge = block.querySelector('.edited-badge[' + attr + '="' + id + '"]');
@@ -236,7 +244,7 @@
   // EN/RU mirror toggle (mirror is read-only; Copy ignores it) — scene and asset blocks
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const block = btn.closest('.prompt-block') || btn.closest('.asset-item');
+      const block = btn.closest('.prompt-block, .asset-variant, .asset-item');
       const en = block.querySelector('pre.prompt, pre.asset-prompt');
       const ru = block.querySelector('pre.prompt-mirror');
       if (!ru) return;
@@ -273,14 +281,24 @@
     });
   });
 
+  // Variant tabs (e.g. character sheet vs AI Cast card) — one variant visible at a time
+  document.querySelectorAll('.variant-tabs').forEach(tabs => {
+    tabs.querySelectorAll('.variant-tab').forEach(tab => tab.addEventListener('click', () => {
+      const item = tabs.closest('.asset-item');
+      tabs.querySelectorAll('.variant-tab').forEach(t => t.classList.toggle('active', t === tab));
+      item.querySelectorAll('.asset-variant').forEach(v => { v.hidden = v.dataset.variant !== tab.dataset.variant; });
+    }));
+  });
+
   // Keyboard shortcuts.
   // Inside a prompt, native editing shortcuts work as usual: Ctrl+Z / Ctrl+Y (undo/redo), Ctrl+C/X/V, Ctrl+A.
   // Board shortcuts target the prompt under the cursor or the one being edited:
   //   Ctrl/Cmd+Shift+C — copy the full prompt · Ctrl/Cmd+Shift+L — toggle RU/EN · Esc — finish editing
   const activeBlock = () => {
     const el = document.activeElement;
-    const focused = el && el.closest ? el.closest('.prompt-block, .asset-item') : null;
-    return focused || document.querySelector('.prompt-block:hover, .asset-item:hover');
+    const focused = el && el.closest ? el.closest('.prompt-block, .asset-variant, .asset-item') : null;
+    return focused || document.querySelector('.asset-variant:hover')
+      || document.querySelector('.prompt-block:hover, .asset-item:hover');
   };
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {

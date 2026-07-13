@@ -170,9 +170,15 @@ const assetPrompts = [...html.matchAll(/<pre class="asset-prompt"([^>]*)>([\s\S]
   text: decode(m[2]),
 }));
 if (assetItems.length > 0 || assetPrompts.length > 0) {
-  check('A-1', assetItems.length === assetPrompts.length && assetPrompts.length > 0,
-    `${assetPrompts.length} asset generation prompt(s)`,
-    `${assetItems.length} asset items but ${assetPrompts.length} asset-prompt blocks`);
+  // Variant tabs let one asset-item hold several prompts (character sheet vs AI Cast card)
+  check('A-1', assetItems.length > 0 && assetPrompts.length >= assetItems.length,
+    `${assetPrompts.length} asset generation prompt(s) in ${assetItems.length} asset item(s)`,
+    `${assetItems.length} asset items but only ${assetPrompts.length} asset-prompt blocks`);
+  const variants = html.match(/<div class="asset-variant"/g) || [];
+  const variantTabs = html.match(/class="variant-tab[ "]/g) || [];
+  check('A-6', variants.length === variantTabs.length,
+    variants.length ? `${variants.length} variant panel(s) with matching tabs` : 'no variant tabs (fine)',
+    `${variants.length} .asset-variant panels but ${variantTabs.length} variant tabs`);
   check('A-2', assetPrompts.every(a => a.text.trim().length > 0 && !/{{/.test(a.text)),
     'asset prompts are filled', 'empty or unfilled asset prompt(s)');
   check('A-3', assetPrompts.every(a => !/[Ѐ-ӿ]/.test(a.text)),
