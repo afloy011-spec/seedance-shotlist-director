@@ -180,6 +180,28 @@ const resetBtns = html.match(/class="tool-btn reset-btn"/g) || [];
 check('S9-5', resetBtns.length === prompts.length,
   'every prompt has a Reset button', `${prompts.length} prompts but ${resetBtns.length} reset buttons`);
 
+// ---------- asset generation prompts (Asset Checklist) ----------
+const assetItems = html.match(/<div class="asset-item">/g) || [];
+const assetPrompts = [...html.matchAll(/<pre class="asset-prompt"[^>]*>([\s\S]*?)<\/pre>/g)].map(m => decode(m[1]));
+if (assetItems.length > 0 || assetPrompts.length > 0) {
+  check('A-1', assetItems.length === assetPrompts.length && assetPrompts.length > 0,
+    `${assetPrompts.length} asset generation prompt(s)`,
+    `${assetItems.length} asset items but ${assetPrompts.length} asset-prompt blocks`);
+  check('A-2', assetPrompts.every(t => t.trim().length > 0 && !/{{/.test(t)),
+    'asset prompts are filled', 'empty or unfilled asset prompt(s)');
+  check('A-3', assetPrompts.every(t => !/[Ѐ-ӿ]/.test(t)),
+    'asset prompts are English (no Cyrillic)', 'Cyrillic inside asset generation prompt(s)');
+  if (bible) {
+    const entries = [...(Array.isArray(bible.characters) ? bible.characters : []),
+                     ...(Array.isArray(bible.assets) ? bible.assets : [])];
+    const missing = entries.filter(a => !a.genPrompt).map(a => a.ref || '?');
+    if (missing.length) warn('A-4', `bible characters/assets without genPrompt: ${missing.join(', ')}`);
+    else pass('A-4', 'every bible character/asset carries its genPrompt');
+  }
+} else {
+  warn('A-1', 'no copyable asset generation prompts in the Asset Checklist (.asset-item blocks)');
+}
+
 // ---------- bible ↔ DOM consistency ----------
 if (bible && Array.isArray(bible.scenes)) {
   const bibleSceneNums = bible.scenes.map(s => String(s.num ?? s.n ?? ''));

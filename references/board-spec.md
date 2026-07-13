@@ -6,7 +6,19 @@ Read this file together with `html-template.html` every time you generate or re-
 
 1. **Title bar** — project name + **runtime summary** (`{{RUNTIME_SUMMARY}}`): target final-cut length · prompt count · total generation seconds. Example: "Target ad: ~30s · 6 prompts · 90s of generation". The **Export edits** button sits in the topbar right of the summary — never inside the help text.
 2. **How to use** — a collapsed `<details class="top-block howto">`: a `<ul>` list (one topic per `<li>`, bold lead word) plus a `.kbd-row` of `<kbd>` chips. Never a wall of prose. Written in the user's language.
-3. **Asset Checklist** — `<details class="top-block" open>`: every asset to build in Higgsfield BEFORE generating, with @names and build instructions (face close-up + full body, ¾ location, product sheet, layout map).
+3. **Asset Checklist** — `<details class="top-block" open>`: every asset to build in Higgsfield BEFORE generating. Each asset is an `.asset-item` block: a head row (@name in monospace accent + a one-line build note in the user's language + a Copy button) and a `<pre class="asset-prompt">` with the copy-ready English generation prompt (patterns in `asset-prompts.md`):
+
+   ```html
+   <div class="asset-list">
+     <div class="asset-item">
+       <div class="asset-head"><b>@vera</b><span>героиня — фейс-клоузап + фулбоди, зафиксировать в Soul</span><button class="copy-btn" title="Скопировать промпт генерации ассета">Copy</button></div>
+       <pre class="asset-prompt" lang="en">Split-frame character sheet, plain solid grey background. LEFT panel: ...</pre>
+     </div>
+     ...
+   </div>
+   ```
+
+   Asset prompts are plain generation prompts — no Style CORE, no data-prompt-id, not editable, no mirror. The template's Copy handler serves them via the shared `.copy-btn` class.
 4. **Style Prefix (core)** — collapsible `<pre>`.
 5. **Repair Guide** — collapsible symptom→fix table (content below).
 6. **Scene list** — pattern below.
@@ -20,7 +32,7 @@ Read this file together with `html-template.html` every time you generate or re-
 | `{{SLUG}}` | Short kebab slug from the title, e.g. `headphones-ad`. NEVER changes across revisions — it namespaces all saved state |
 | `{{USER_LANG}}` | `<html lang>` = the user's language code (`ru`, `en`, …) |
 | `{{RUNTIME_SUMMARY}}` | Runtime summary line (see above), arithmetically consistent with the prompt labels |
-| `{{ASSET_CHECKLIST_HTML}}` | Checklist markup (user's language, @names verbatim) |
+| `{{ASSET_CHECKLIST_HTML}}` | `.asset-list` of `.asset-item` blocks: head note in the user's language, generation prompt in English (see Board structure item 3) |
 | `{{STYLE_PREFIX_TEXT}}` | The style CORE text (English) |
 | `{{REPAIR_GUIDE_HTML}}` | `<table>` with the symptom→fix rows below, translated to the user's language |
 | `{{SCENES_HTML}}` | Scene blocks (pattern below) |
@@ -129,8 +141,10 @@ Embedded as `<script type="application/json" id="project-bible">`. Purpose: a fu
     { "ref": "@hero", "desc": "woman ~30, ...", "states": ["@hero_waistwet", "@hero_soaked", "@hero_dry2"] }
   ],
   "assets": [
-    { "ref": "@trailpro", "type": "prop", "build": "multi-angle product sheet" },
-    { "ref": "@campsite", "type": "location", "build": "¾ angle reference + overhead layout map" }
+    { "ref": "@trailpro", "type": "prop", "build": "multi-angle product sheet",
+      "genPrompt": "Product prop sheet / orthographic turnaround: a forest-green canvas daypack ..." },
+    { "ref": "@campsite", "type": "location", "build": "¾ angle reference + overhead layout map",
+      "genPrompt": "Dusk exterior, 3/4 angle with depth: a mountain campsite ..." }
   ],
   "scenes": [
     {

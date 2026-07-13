@@ -15,6 +15,7 @@ This file holds the directing method and prompt rules. The rest is split out —
 
 | File | When to read it |
 |---|---|
+| `references/asset-prompts.md` | At workflow step 2, when extracting assets — patterns for the per-asset generation prompts |
 | `references/worked-examples.md` | Before writing the first prompt of a session, and before applying a revision |
 | `references/board-spec.md` + `references/html-template.html` | Before generating or re-generating the HTML file (board mechanics, scene-block pattern, Project Bible schema, localStorage contract) |
 | `references/extras.md` | Only if the user asks for 9:16 / 1:1 versions or gives a music track / BPM |
@@ -37,6 +38,7 @@ Seedance consistency lives and dies on locked reference assets. Before writing a
    - Location: ¾ angle reference with depth (so the camera can move)
    - Product/prop: multi-angle sheet (GPT Image or similar)
    - For complex staging: a **layout map** — a simple overhead schematic pinning where things stand relative to each other; reference it in the Scene block instead of describing geometry in prose
+5. **Write a generation prompt for every asset** — a small copy-ready English prompt the user pastes into an image tool to BUILD that reference (patterns in `references/asset-prompts.md`). The checklist renders each one as a copyable block with its own Copy button — the board covers the whole pipeline, assets included.
 
 If the user has already uploaded asset images or given @names in the conversation, use their names verbatim. If not, invent clear names and tell the user to create matching Elements.
 
@@ -186,7 +188,7 @@ The Style CORE locks the global look; the per-scene Lighting line is yours to de
 When the user gives you a script (or scene, or idea):
 
 1. **Read it as a director, not a transcriber.** Find the dramatic shape. Where does the scene turn? Where does it land? Where does it breathe?
-2. **Extract assets, assign @names, build the internal continuity table.** Who's in this? What do they look like? What states do they pass through (each state = an asset variant)?
+2. **Extract assets, assign @names, build the internal continuity table.** Who's in this? What do they look like? What states do they pass through (each state = an asset variant)? Read `references/asset-prompts.md` and write a generation prompt for every asset.
 3. **Block out scenes.** Number them 1, 2, 3… Each scene is one beat or location. Design the per-scene lighting and the match-cuts between scenes.
 4. **Decide prompt count per scene.** Each prompt is one 15-second beat. A 12-second moment still gets one full prompt — fill the 15 seconds with the breath, the look, the held silence after the line. A 40-second confession = 3 prompts (e.g., 5a, 5b, 5c). Honest assessment: how many 15-second beats does this moment actually need to land?
 5. **Read `references/worked-examples.md`, then write each prompt** following the strict structure: Style CORE + Lighting, Characters (@refs), Scene + geo-spatial, CUTs, ENDS ON, SFX. Assign risk badge and final-cut target.

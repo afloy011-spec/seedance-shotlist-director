@@ -44,6 +44,14 @@
     white-space: pre-wrap; color: var(--text); }
   details.top-block table { border-collapse: collapse; margin-top: 14px; font-size: 13px; width: 100%; }
   details.top-block td, details.top-block th { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+  .asset-list { margin-top: 14px; display: grid; gap: 14px; }
+  .asset-item { background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
+  .asset-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 13px;
+    color: var(--text-dim); margin-bottom: 8px; }
+  .asset-head b { color: var(--accent); font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+  .asset-head .copy-btn { margin-left: auto; }
+  pre.asset-prompt { margin: 0; padding: 10px 12px; background: var(--bg); border-radius: 6px;
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; white-space: pre-wrap; color: var(--text); }
   .scene { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
     padding: 20px 22px; margin-bottom: 18px; }
   .scene-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
@@ -161,10 +169,14 @@
     if (el.tagName === 'INPUT') el.addEventListener('input', () => localStorage.setItem(key, el.value));
   });
 
-  // Copy buttons with fallback — always copies the ENGLISH prompt, edits included
+  // Copy buttons with fallback — always copies the ENGLISH prompt, edits included.
+  // Serves both scene prompts (.prompt-block pre.prompt) and asset prompts (.asset-item pre.asset-prompt).
   document.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const text = btn.closest('.prompt-block').querySelector('pre.prompt').textContent;
+      const scope = btn.closest('.prompt-block') || btn.closest('.asset-item');
+      const pre = scope && scope.querySelector('pre.prompt, pre.asset-prompt');
+      if (!pre) return;
+      const text = pre.textContent;
       const ok = () => { btn.classList.add('copied'); const o = btn.textContent; btn.textContent = 'Copied';
         setTimeout(() => { btn.classList.remove('copied'); btn.textContent = o; }, 1500); };
       const fail = () => { btn.classList.add('failed'); const o = btn.textContent; btn.textContent = 'Select & Ctrl+C';
