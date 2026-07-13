@@ -163,33 +163,19 @@ const runtime = html.match(/<div class="runtime">([\s\S]*?)<\/div>/);
 check('S3-1', !!runtime && runtime[1].trim().length > 0 && !/{{/.test(runtime[1]),
   'runtime summary present', 'runtime summary missing or empty');
 
-// ---------- language mirror (S9) ----------
-if (userLang !== 'en') {
-  const mirrors = html.match(/<pre class="prompt-mirror"/g) || [];
-  check('S9-1', mirrors.length === prompts.length,
-    'every prompt has a language mirror', `${prompts.length} prompts but ${mirrors.length} mirrors`);
-  const langBtns = html.match(/class="tool-btn lang-btn"/g) || [];
-  check('S9-2', langBtns.length === prompts.length,
-    'every prompt has a mirror toggle', `${prompts.length} prompts but ${langBtns.length} lang buttons`);
-  const stale = html.match(/class="mirror-stale"/g) || [];
-  check('S9-3', stale.length === prompts.length,
-    'every prompt has a stale-translation notice', `${prompts.length} prompts but ${stale.length} .mirror-stale divs`);
-}
-check('S9-4', /id="export-edits"/.test(html), 'Export edits button present', 'missing #export-edits button');
-const resetBtns = html.match(/class="tool-btn reset-btn"/g) || [];
-check('S9-5', resetBtns.length === prompts.length,
-  'every prompt has a Reset button', `${prompts.length} prompts but ${resetBtns.length} reset buttons`);
-
 // ---------- asset generation prompts (Asset Checklist) ----------
 const assetItems = html.match(/<div class="asset-item">/g) || [];
-const assetPrompts = [...html.matchAll(/<pre class="asset-prompt"[^>]*>([\s\S]*?)<\/pre>/g)].map(m => decode(m[1]));
+const assetPrompts = [...html.matchAll(/<pre class="asset-prompt"([^>]*)>([\s\S]*?)<\/pre>/g)].map(m => ({
+  id: m[1].match(/data-asset-id="([^"]+)"/)?.[1] ?? null,
+  text: decode(m[2]),
+}));
 if (assetItems.length > 0 || assetPrompts.length > 0) {
   check('A-1', assetItems.length === assetPrompts.length && assetPrompts.length > 0,
     `${assetPrompts.length} asset generation prompt(s)`,
     `${assetItems.length} asset items but ${assetPrompts.length} asset-prompt blocks`);
-  check('A-2', assetPrompts.every(t => t.trim().length > 0 && !/{{/.test(t)),
+  check('A-2', assetPrompts.every(a => a.text.trim().length > 0 && !/{{/.test(a.text)),
     'asset prompts are filled', 'empty or unfilled asset prompt(s)');
-  check('A-3', assetPrompts.every(t => !/[Ѐ-ӿ]/.test(t)),
+  check('A-3', assetPrompts.every(a => !/[Ѐ-ӿ]/.test(a.text)),
     'asset prompts are English (no Cyrillic)', 'Cyrillic inside asset generation prompt(s)');
   if (bible) {
     const entries = [...(Array.isArray(bible.characters) ? bible.characters : []),
@@ -198,9 +184,29 @@ if (assetItems.length > 0 || assetPrompts.length > 0) {
     if (missing.length) warn('A-4', `bible characters/assets without genPrompt: ${missing.join(', ')}`);
     else pass('A-4', 'every bible character/asset carries its genPrompt');
   }
+  check('A-5', assetPrompts.every(a => a.id) && new Set(assetPrompts.map(a => a.id)).size === assetPrompts.length,
+    'asset prompts carry unique data-asset-id', 'missing or duplicate data-asset-id on asset prompt(s)');
 } else {
   warn('A-1', 'no copyable asset generation prompts in the Asset Checklist (.asset-item blocks)');
 }
+
+// ---------- language mirror & editing chrome (S9) — scene prompts + asset prompts ----------
+const units = prompts.length + assetPrompts.length;
+if (userLang !== 'en') {
+  const mirrors = html.match(/<pre class="prompt-mirror"/g) || [];
+  check('S9-1', mirrors.length === units,
+    'every prompt and asset prompt has a language mirror', `${units} editable blocks but ${mirrors.length} mirrors`);
+  const langBtns = html.match(/class="tool-btn lang-btn"/g) || [];
+  check('S9-2', langBtns.length === units,
+    'every block has a mirror toggle', `${units} blocks but ${langBtns.length} lang buttons`);
+  const stale = html.match(/class="mirror-stale"/g) || [];
+  check('S9-3', stale.length === units,
+    'every block has a stale-translation notice', `${units} blocks but ${stale.length} .mirror-stale divs`);
+}
+check('S9-4', /id="export-edits"/.test(html), 'Export edits button present', 'missing #export-edits button');
+const resetBtns = html.match(/class="tool-btn reset-btn"/g) || [];
+check('S9-5', resetBtns.length === units,
+  'every editable block has a Reset button', `${units} blocks but ${resetBtns.length} reset buttons`);
 
 // ---------- bible ↔ DOM consistency ----------
 if (bible && Array.isArray(bible.scenes)) {

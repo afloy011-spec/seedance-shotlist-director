@@ -31,6 +31,22 @@ RIGHT panel: full-body front and back views side by side of the same person,
 - **Give the face one small verifiable mark** (a mole, a freckle pattern) — it becomes the continuity anchor across cuts.
 - **Seated characters** (drivers, office workers): request the full-body panel "seated, as if at [the wheel / a desk]".
 
+## Character — Higgsfield AI Cast variant (ship BOTH, user picks)
+
+Higgsfield's AI Cast / Soul character creation wants the OPPOSITE of the sheet: a compact casting card, **50–75 words maximum** — longer prompts dilute the identity signal. Structure:
+
+```
+Soul: [age]yo [build] [ethnicity/look] [gender], [height if it matters].
+[3–5 facial anchors: hair, face shape, eyes, one small verifiable mark].
+[Resting expression / character in one clause].
+[Wardrobe, item by item, compact].
+[Lighting/mood matching the film, one clause]. Cinematic.
+```
+
+Example: "Soul: 28yo slim East European woman, 170 cm. Shoulder-length dark brown hair, oval face, expressive dark eyes, small mole on the left cheekbone. Calm, observant, guarded. Open camel wool coat over a black dress, crossbody bag worn in front, white earbuds. Cold night street lighting, cinematic."
+
+Every character in the checklist ships **two copyable prompts**: variant A — the split-frame sheet (above), variant B — the AI Cast card. Same identity anchors in both (the same mole, the same wardrobe) so either path locks the same person. In the bible, variant B is stored as `aiCastPrompt` next to `genPrompt`.
+
 ## Character variants (state and wardrobe)
 
 Variants are EDITS of the locked sheet, not new generations — identity must survive:

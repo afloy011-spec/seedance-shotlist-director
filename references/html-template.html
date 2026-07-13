@@ -49,7 +49,7 @@
   .asset-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 13px;
     color: var(--text-dim); margin-bottom: 8px; }
   .asset-head b { color: var(--accent); font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
-  .asset-head .copy-btn { margin-left: auto; }
+  .asset-head .prompt-actions { margin-left: auto; }
   pre.asset-prompt { margin: 0; padding: 10px 12px; background: var(--bg); border-radius: 6px;
     font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; white-space: pre-wrap; color: var(--text); }
   .scene { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
@@ -191,22 +191,26 @@
     });
   });
 
-  // Editable prompts: persist local edits, Reset restores the generated original.
-  // The translation mirror is generated for the ORIGINAL text — when a local edit
-  // exists and the mirror is visible, a stale-translation notice is shown.
+  // Editable prompts — scene prompts AND asset prompts. Local edits persist,
+  // Reset restores the generated original. The translation mirror is generated
+  // for the ORIGINAL text — when a local edit exists and the mirror is visible,
+  // a stale-translation notice is shown.
   const updateStale = block => {
     const stale = block.querySelector('.mirror-stale');
     const ru = block.querySelector('pre.prompt-mirror');
     if (stale) stale.hidden = !(ru && !ru.hidden && block.dataset.edited === '1');
   };
   const originals = new Map();
-  document.querySelectorAll('pre.prompt').forEach(pre => {
-    const id = pre.dataset.promptId;
-    const block = pre.closest('.prompt-block');
-    originals.set(id, pre.textContent);
-    const key = K('p-' + id + '-edit');
-    const badge = document.querySelector('.edited-badge[data-prompt-id="' + id + '"]');
-    const resetBtn = document.querySelector('.reset-btn[data-prompt-id="' + id + '"]');
+  document.querySelectorAll('pre.prompt, pre.asset-prompt').forEach(pre => {
+    const isAsset = pre.classList.contains('asset-prompt');
+    const id = isAsset ? pre.dataset.assetId : pre.dataset.promptId;
+    const attr = isAsset ? 'data-asset-id' : 'data-prompt-id';
+    const storeId = (isAsset ? 'a-' : 'p-') + id;
+    const block = pre.closest(isAsset ? '.asset-item' : '.prompt-block');
+    originals.set(storeId, pre.textContent);
+    const key = K(storeId + '-edit');
+    const badge = block.querySelector('.edited-badge[' + attr + '="' + id + '"]');
+    const resetBtn = block.querySelector('.reset-btn[' + attr + '="' + id + '"]');
     const mark = edited => {
       if (badge) badge.hidden = !edited;
       if (resetBtn) resetBtn.hidden = !edited;
@@ -225,15 +229,15 @@
     pre.addEventListener('drop', e => e.preventDefault());
     pre.addEventListener('input', () => { localStorage.setItem(key, pre.textContent); mark(true); });
     if (resetBtn) resetBtn.addEventListener('click', () => {
-      pre.textContent = originals.get(id); localStorage.removeItem(key); mark(false);
+      pre.textContent = originals.get(storeId); localStorage.removeItem(key); mark(false);
     });
   });
 
-  // EN/RU mirror toggle (mirror is read-only; Copy ignores it)
+  // EN/RU mirror toggle (mirror is read-only; Copy ignores it) — scene and asset blocks
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const block = btn.closest('.prompt-block');
-      const en = block.querySelector('pre.prompt');
+      const block = btn.closest('.prompt-block') || btn.closest('.asset-item');
+      const en = block.querySelector('pre.prompt, pre.asset-prompt');
       const ru = block.querySelector('pre.prompt-mirror');
       if (!ru) return;
       const showRu = ru.hidden;
@@ -249,10 +253,11 @@
   const exportBtn = document.getElementById('export-edits');
   if (exportBtn) exportBtn.addEventListener('click', () => {
     const parts = [];
-    document.querySelectorAll('pre.prompt').forEach(pre => {
-      const id = pre.dataset.promptId;
-      if (localStorage.getItem(K('p-' + id + '-edit')) !== null) {
-        parts.push('=== Prompt ' + id + ' (edited) ===\n' + pre.textContent);
+    document.querySelectorAll('pre.prompt, pre.asset-prompt').forEach(pre => {
+      const isAsset = pre.classList.contains('asset-prompt');
+      const id = isAsset ? pre.dataset.assetId : pre.dataset.promptId;
+      if (localStorage.getItem(K((isAsset ? 'a-' : 'p-') + id + '-edit')) !== null) {
+        parts.push('=== ' + (isAsset ? 'Asset ' : 'Prompt ') + id + ' (edited) ===\n' + pre.textContent);
       }
     });
     const done = n => { const o = exportBtn.textContent; exportBtn.textContent = n;
@@ -274,13 +279,13 @@
   //   Ctrl/Cmd+Shift+C — copy the full prompt · Ctrl/Cmd+Shift+L — toggle RU/EN · Esc — finish editing
   const activeBlock = () => {
     const el = document.activeElement;
-    const focused = el && el.closest ? el.closest('.prompt-block') : null;
-    return focused || document.querySelector('.prompt-block:hover');
+    const focused = el && el.closest ? el.closest('.prompt-block, .asset-item') : null;
+    return focused || document.querySelector('.prompt-block:hover, .asset-item:hover');
   };
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       const el = document.activeElement;
-      if (el && el.classList && el.classList.contains('prompt')) el.blur();
+      if (el && el.classList && (el.classList.contains('prompt') || el.classList.contains('asset-prompt'))) el.blur();
       return;
     }
     if (!(e.ctrlKey || e.metaKey) || !e.shiftKey) return;

@@ -62,7 +62,7 @@ Scored (grade 1–10, target ≥8 each):
 - [ ] S7. `[manual]` Match-cuts designed between scenes where the material allows
 - [ ] S8. `[manual]` Center-safe composition noted in CUT framing (reframe-ready for 9:16/1:1)
 - [ ] S9. `[auto]` Prompts are click-to-edit with Reset; non-English user gets a per-prompt mirror + stale notice; Export edits present
-- [ ] S10. `[auto]` Every checklist asset ships a copy-ready English generation prompt (.asset-item + genPrompt in the bible); `[manual]` prompts follow the patterns in references/asset-prompts.md (split-frame sheets, no-branding, ¾ locations, silhouette UI, diagram layout maps)
+- [ ] S10. `[auto]` Every checklist asset ships a copy-ready English generation prompt (.asset-item with unique data-asset-id, editable with Reset, mirrored for non-English users, genPrompt in the bible); characters ship BOTH a sheet and an AI Cast variant (aiCastPrompt); `[manual]` prompts follow the patterns in references/asset-prompts.md (split-frame sheets, Soul cast cards ≤75 words, no-branding, ¾ locations, silhouette UI, diagram layout maps)
 
 Revision probe (run after any golden, using its output):
 

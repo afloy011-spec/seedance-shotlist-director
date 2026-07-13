@@ -11,14 +11,23 @@ Read this file together with `html-template.html` every time you generate or re-
    ```html
    <div class="asset-list">
      <div class="asset-item">
-       <div class="asset-head"><b>@vera</b><span>героиня — фейс-клоузап + фулбоди, зафиксировать в Soul</span><button class="copy-btn" title="Скопировать промпт генерации ассета">Copy</button></div>
-       <pre class="asset-prompt" lang="en">Split-frame character sheet, plain solid grey background. LEFT panel: ...</pre>
+       <div class="asset-head"><b>@vera</b><span>героиня — сплит-лист (вариант A)</span>
+         <span class="prompt-actions">
+           <span class="edited-badge" data-asset-id="vera-sheet" hidden>edited</span>
+           <button class="tool-btn reset-btn" data-asset-id="vera-sheet" hidden title="Вернуть исходный текст">Reset</button>
+           <button class="tool-btn lang-btn" title="Показать перевод (Ctrl+Shift+L)" aria-pressed="false">RU</button>
+           <button class="copy-btn" title="Скопировать промпт генерации ассета (Ctrl+Shift+C)">Copy</button>
+         </span>
+       </div>
+       <pre class="asset-prompt" lang="en" data-asset-id="vera-sheet">Split-frame character sheet, plain solid grey background. LEFT panel: ...</pre>
+       <div class="mirror-stale" data-asset-id="vera-sheet" hidden>Промпт был отредактирован — перевод соответствует исходной версии.</div>
+       <pre class="prompt-mirror" hidden>[перевод на язык пользователя]</pre>
      </div>
      ...
    </div>
    ```
 
-   Asset prompts are plain generation prompts — no Style CORE, no data-prompt-id, not editable, no mirror. The template's Copy handler serves them via the shared `.copy-btn` class.
+   Asset prompts are plain generation prompts — no Style CORE, no status row. They ARE first-class citizens of the editing machinery: `data-asset-id` (unique, kebab, no @), click-to-edit with Reset, a language mirror when the user's language isn't English, inclusion in Export edits (`=== Asset vera-sheet (edited) ===`). **Characters ship two asset-items each**: variant A — split-frame sheet, variant B — Higgsfield AI Cast card (ids `{name}-sheet` / `{name}-cast`, patterns in `asset-prompts.md`).
 4. **Style Prefix (core)** — collapsible `<pre>`.
 5. **Repair Guide** — collapsible symptom→fix table (content below).
 6. **Scene list** — pattern below.
@@ -98,6 +107,7 @@ Every key is prefixed `sd-{slug}-`:
 | `sd-{slug}-p-{promptId}-keeper` | keeper timecode text |
 | `sd-{slug}-p-{promptId}-notes` | notes text |
 | `sd-{slug}-p-{promptId}-edit` | locally edited prompt text (absence = unedited) |
+| `sd-{slug}-a-{assetId}-edit` | locally edited asset generation prompt |
 
 Keeping the slug stable across revisions is what preserves the user's saved statuses, keepers, notes, and local edits.
 
@@ -138,7 +148,9 @@ Embedded as `<script type="application/json" id="project-bible">`. Purpose: a fu
   "targetRuntime": "~30s final · 12 prompts · 180s generation",
   "styleCore": "Style: 8K IMAX. ...",
   "characters": [
-    { "ref": "@hero", "desc": "woman ~30, ...", "states": ["@hero_waistwet", "@hero_soaked", "@hero_dry2"] }
+    { "ref": "@hero", "desc": "woman ~30, ...", "states": ["@hero_waistwet", "@hero_soaked", "@hero_dry2"],
+      "genPrompt": "Split-frame character sheet, plain solid grey background. LEFT panel: ...",
+      "aiCastPrompt": "Soul: 30yo athletic woman. ... (50–75 words)" }
   ],
   "assets": [
     { "ref": "@trailpro", "type": "prop", "build": "multi-angle product sheet",
