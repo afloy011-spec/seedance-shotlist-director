@@ -38,7 +38,8 @@
   details.top-block { background: var(--panel); border: 1px solid var(--border);
     border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; }
   details.top-block summary { cursor: pointer; font-weight: 600; color: var(--accent); user-select: none; }
-  details.top-block pre, details.top-block .inner { margin: 14px 0 0; padding: 14px;
+  /* Direct child only — must NOT bleed into asset prompts/mirrors nested in the checklist */
+  details.top-block > pre, details.top-block .inner { margin: 14px 0 0; padding: 14px;
     background: var(--panel-2); border-radius: 6px;
     font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px;
     white-space: pre-wrap; color: var(--text); }
