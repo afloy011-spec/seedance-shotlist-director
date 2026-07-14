@@ -16,6 +16,7 @@ This file holds the directing method and prompt rules. The rest is split out —
 | File | When to read it |
 |---|---|
 | `references/asset-prompts.md` | At workflow step 2, when extracting assets — patterns for the per-asset generation prompts |
+| `references/cinematography.md` | Before writing the first prompt of a session — FOV-in-degrees optics, cut/transition vocabulary and timing, measurable language, positive locks, first-frame image lock (i2v) |
 | `references/worked-examples.md` | Before writing the first prompt of a session, and before applying a revision |
 | `references/board-spec.md` + `references/html-template.html` | Before generating or re-generating the HTML file (board mechanics, scene-block pattern, Project Bible schema, localStorage contract) |
 | `references/extras.md` | Only if the user asks for 9:16 / 1:1 versions or gives a music track / BPM |
@@ -89,11 +90,11 @@ Characters:
 Scene:
 [1–2 sentences. What's happening, where (@location), when. Geo-spatial — where each character is positioned relative to the location and to each other. "Anna stands at the kitchen window, back to the room. Marco enters from the hallway, stops in the doorway six feet behind her." For complex staging, reference the layout map instead of prose geometry.]
 
-CUT 1 — [shot type, lens feel, movement]:
+CUT 1 — [shot size, FOV in degrees, movement]:
 [What happens in this shot. Acting beat, gesture, eye-line, breath, micro-pause. What the camera is doing. What the light is doing. Dialogue lines quoted with delivery direction: she says, barely above a whisper: "You came back." Diegetic sound if relevant.]
 
-CUT 2 — [shot type, lens feel, movement]:
-[Next beat. Same level of detail.]
+CUT 2 — [shot size, FOV in degrees, movement]:
+[Next beat. Same level of detail. Default transition between CUTs is a hard cut; name a transition (MATCH CUT, WHIP CUT, SMASH CUT…) only when it's not — vocabulary and timing rules in cinematography.md.]
 
 ENDS ON: [the exact final frame — body position, eye-line, motion state. This is the handoff: the next prompt's first frame must match it.]
 
@@ -171,17 +172,25 @@ These never become a separate visible block in the HTML (the machine-readable sn
 
 ### Camera language
 
-Be specific. Lens, height, movement, motivation.
+Be specific. Shot size, FOV, height, movement, motivation. State FOV in **degrees from the approved table** in `cinematography.md` — Seedance holds degrees more reliably than lens millimeters. Add `no drift mid-segment` when a segment must hold its optics.
 
-- "Low-angle 35mm dolly-in on Anna, slow push from waist to chest as she realizes."
-- "Static 50mm two-shot, eye-level, locked off — lets the silence sit."
-- "Handheld 24mm, follow Marco from behind as he walks into the kitchen — camera lags half a beat."
+- "Low-angle 18° FOV dolly-in on Anna, slow push from waist to chest as she realizes."
+- "Static 47° FOV two-shot, eye-level, locked off — lets the silence sit."
+- "Handheld 63° FOV, follow Marco from behind as he walks into the kitchen — camera lags half a beat."
 
-Motivate every camera move. The camera is a character; it has a reason to be where it is.
+Motivate every camera move. The camera is a character; it has a reason to be where it is. Default the camera to the subject's shadow side and state the operator axis. For sequences built on extreme optics (8° / 107°), follow the LENS LOCK / LENS CHECK protocol in `cinematography.md`.
 
 ### Lighting and color
 
-The Style CORE locks the global look; the per-scene Lighting line is yours to design (see above). Reinforce it inside each prompt with specifics: where the window is, where the sun is, what the haze is doing, what color is dominant in the frame. This isn't redundant — it's how Seedance knows where to put the rim light.
+The Style CORE locks the global look; the per-scene Lighting line is yours to design (see above). Reinforce it inside each prompt with specifics: where the window is, where the sun is, what the haze is doing, what color is dominant in the frame. This isn't redundant — it's how Seedance knows where to put the rim light. Anchor each scene's Lighting line with a white balance in Kelvin (3200K / 4000K / 5600K / 8500K) and keep it fixed within one location/time state.
+
+### Measurable language and positive locks
+
+Replace vague intensifiers with numbers: speed in km/h, fog/haze in % + meters of depth, scale in stacked human heights, white balance in Kelvin. Bind color to material + light + role ("crimson silk catching the cold corridor spill"), never a flat color list. And phrase constraints positively — "the camera holds each segment continuously between the listed cuts" beats "no extra cuts". The full ruleset with examples is in `cinematography.md`.
+
+### Animating a supplied start frame (image-to-video)
+
+When the user gives an image that must be a prompt's exact first frame — a generated start frame, a keeper frame from the previous clip, a photo — open that prompt with the first-frame lock block from `cinematography.md`, above the Style CORE, and animate the frame instead of re-describing the scene. Feeding a clip's final frame back as the next prompt's `@image` start frame is the strongest handoff for high-risk seams — offer it when it helps.
 
 ## Workflow
 
@@ -191,7 +200,7 @@ When the user gives you a script (or scene, or idea):
 2. **Extract assets, assign @names, build the internal continuity table.** Who's in this? What do they look like? What states do they pass through (each state = an asset variant)? Read `references/asset-prompts.md` and write a generation prompt for every asset.
 3. **Block out scenes.** Number them 1, 2, 3… Each scene is one beat or location. Design the per-scene lighting and the match-cuts between scenes.
 4. **Decide prompt count per scene.** Each prompt is one 15-second beat. A 12-second moment still gets one full prompt — fill the 15 seconds with the breath, the look, the held silence after the line. A 40-second confession = 3 prompts (e.g., 5a, 5b, 5c). Honest assessment: how many 15-second beats does this moment actually need to land?
-5. **Read `references/worked-examples.md`, then write each prompt** following the strict structure: Style CORE + Lighting, Characters (@refs), Scene + geo-spatial, CUTs, ENDS ON, SFX. Assign risk badge and final-cut target.
+5. **Read `references/cinematography.md` and `references/worked-examples.md`, then write each prompt** following the strict structure: Style CORE + Lighting, Characters (@refs), Scene + geo-spatial, CUTs (shot size + FOV in degrees), ENDS ON, SFX. Assign risk badge and final-cut target.
 6. **Read `references/board-spec.md` and `references/html-template.html`, then generate the HTML** — asset checklist, repair guide, runtime summary, Project Bible JSON included.
 7. **Save to `shotlist.html`** in the current working directory (or a user-specified path).
 8. **Validate**: run `node scripts/validate.mjs shotlist.html` (paths relative to this skill's folder). Fix every FAIL and re-run until clean; if Node.js is unavailable, hand-check the blocking criteria in `tests/golden-scenarios.md`.

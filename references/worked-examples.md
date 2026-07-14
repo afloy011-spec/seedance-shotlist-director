@@ -11,7 +11,7 @@ This is a single scene — call it Scene 1. Assets: `@anna_wet` (soaked state �
 ```
 Style: 8K IMAX. Photorealistic — no 3D render, no game engine.
 [...full style CORE verbatim...]
-Lighting: Natural light only — rain-blue evening spill through the window stage-right, contre-jour on the doorway, camera on the shadow side, atmospheric haze. Key from window and street light only. No artificial lighting.
+Lighting: Natural light only — rain-blue evening spill through the window stage-right, 8500K blue-hour white balance held for the whole scene, contre-jour on the doorway, camera on the shadow side, 20% atmospheric haze. Key from window and street light only. No artificial lighting.
 
 Characters:
 ANNA (@anna_wet) — late 20s, dark hair plastered to her forehead from the rain, soaked navy coat dripping onto the hardwood, mascara slightly smudged under her right eye, lips slightly parted from cold.
@@ -20,13 +20,13 @@ MARCO (@marco) — early 30s, faded grey t-shirt, three-day stubble, paperback b
 Scene:
 A small Brooklyn apartment (@apartment), evening. Living room opens directly into a narrow hallway leading to the bedroom. Rain audible against the window stage-right. Marco sits on the left end of a worn leather couch, facing camera-right. The front door is camera-left. Anna enters from the front door, water streaming off her coat. The space between them is roughly twelve feet, and it stays twelve feet.
 
-CUT 1 — Wide static, 35mm, eye-level, locked off:
+CUT 1 — WS static, 63° FOV, eye-level, locked off, no drift mid-segment:
 The front door swings open. Anna stands silhouetted in the doorway against the rain-blue street light, contre-jour, water visibly dripping from her coat hem. She doesn't look at Marco. She closes the door slowly with her back, eyes on the floor. Beat. Marco looks up from his book — a small head-tilt, no other movement.
 
-CUT 2 — Medium two-shot, 50mm, slow push-in from couch height:
+CUT 2 — MS two-shot, 47° FOV, slow push-in from couch height:
 Anna walks across the frame, left to right, toward the hallway. Her steps leave wet prints on the hardwood. As she passes the couch, she does not turn her head. Marco's eyes track her — only his eyes, his head stays still. The book stays open on his lap.
 
-CUT 3 — Close on Marco, 85mm, static, contre-jour from window behind him:
+CUT 3 — CU on Marco, 18° FOV, static, contre-jour from window behind him:
 Marco watches her go. A single slow blink. His jaw shifts once. He looks back down at the book but doesn't read — his eyes stay on the same spot. Off-screen, the bedroom door clicks shut.
 
 ENDS ON: Marco alone in frame, close-up, eyes locked on one unread line of the book, jaw set — the couch and rain-lit window behind him. (Scene 2 opens on this exact frame or on a match-cut from the bedroom door.)

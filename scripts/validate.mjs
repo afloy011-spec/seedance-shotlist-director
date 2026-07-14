@@ -123,6 +123,11 @@ const noRefs = prompts.filter(p => !/@[a-z][a-z0-9_]*/i.test(p.text)).map(p => p
 check('B1-1', noRefs.length === 0, 'every prompt references @assets',
   `no @asset reference in prompt(s): ${noRefs.join(', ')}`);
 
+// optics: FOV in degrees, not lens millimeters (cinematography.md) — asset prompts are exempt
+const mmLens = prompts.filter(p => /\b\d{2,3}\s?mm\b/.test(p.text)).map(p => p.id);
+if (mmLens.length) warn('C-1', `lens millimeters in prompt(s) ${mmLens.join(', ')} — state FOV in degrees (see references/cinematography.md)`);
+else pass('C-1', 'no lens-mm values in video prompts (FOV degrees)');
+
 // lighting reuse across different scenes (B3 — mechanical half; semantic review stays manual)
 const sceneOf = id => (id?.match(/^([0-9]+(?:\.[0-9]+)?)/)?.[1]) ?? id;
 const lightingByScene = new Map();
