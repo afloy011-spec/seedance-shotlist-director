@@ -45,7 +45,9 @@
     white-space: pre-wrap; color: var(--text); }
   details.top-block table { border-collapse: collapse; margin-top: 14px; font-size: 13px; width: 100%; }
   details.top-block td, details.top-block th { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
-  .asset-list { margin-top: 14px; display: grid; gap: 14px; }
+  /* .inner is pre-wrap for plain-text content; the asset markup inside must not
+     render its inter-tag newlines as phantom grid items / blank space */
+  .asset-list { margin-top: 14px; display: grid; gap: 14px; white-space: normal; }
   .asset-item { background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
   .asset-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 13px;
     color: var(--text-dim); margin-bottom: 8px; }
